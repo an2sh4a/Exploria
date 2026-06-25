@@ -33,64 +33,92 @@ export default function Hero() {
 
       {/* Hero Content */}
 
-      <div className="relative z-10 flex h-full items-center">
+        <div className="relative z-10 flex h-full items-center">
 
         <motion.div
-          initial={{ opacity: 0, x: -60 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1 }}
-          className="ml-24 max-w-xl"
+            initial={{ opacity: 0, x: -60 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1 }}
+            className="ml-24 max-w-xl"
         >
 
-          <p className="uppercase tracking-[0.35em] text-cyan-300 text-sm">
-            Interactive Academic Escape Room
-          </p>
+            {/* Status */}
 
-          <h1 className="mt-4 text-8xl font-black text-white leading-none">
+            <div className="flex items-center gap-3 mb-6">
+
+            <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse"></div>
+
+            <p className="uppercase tracking-[0.3em] text-green-300 text-sm font-semibold">
+                SYSTEM ONLINE
+            </p>
+
+            </div>
+
+
+            {/* Title */}
+
+            <h1 className="text-8xl font-black text-white leading-none tracking-wide">
             EXPLORIA
-          </h1>
+            </h1>
 
-          <p className="mt-6 text-2xl text-cyan-200">
+
+            <p className="mt-6 text-2xl text-cyan-300 font-medium">
             Escape. Learn. Conquer.
-          </p>
+            </p>
 
-          <p className="mt-5 text-zinc-300 leading-8 text-lg">
-            Every clue uncovers knowledge.
-            Every room transforms learning into an adventure.
-          </p>
 
-          <motion.button
+            {/* Mission */}
+
+            <div className="mt-10 border-l-4 border-cyan-400 pl-6">
+
+            <p className="uppercase tracking-[0.3em] text-cyan-300 text-sm mb-4">
+                Mission Brief
+            </p>
+
+            <p className="text-zinc-300 leading-8 text-lg">
+                Knowledge has been fragmented.
+
+                Explore immersive escape rooms, investigate clues,
+                solve academic puzzles, and escape before time runs out.
+            </p>
+
+            </div>
+
+
+            {/* Button */}
+
+            <motion.button
             whileHover={{
-              scale: 1.05,
+                scale: 1.05,
             }}
             whileTap={{
-              scale: 0.95,
+                scale: 0.95,
             }}
             className="
-              mt-12
-              px-8
-              py-4
-              rounded-xl
-              border
-              border-cyan-400
-              bg-cyan-500/10
-              backdrop-blur-md
-              text-cyan-200
-              font-semibold
-              text-lg
-              hover:bg-cyan-400
-              hover:text-black
-              transition-all
-              duration-300
-              hover:shadow-[0_0_35px_#22d3ee]
+                mt-12
+                px-10
+                py-4
+                rounded-xl
+                border
+                border-cyan-400
+                bg-cyan-500/10
+                backdrop-blur-md
+                text-cyan-200
+                font-semibold
+                text-lg
+                hover:bg-cyan-400
+                hover:text-black
+                transition-all
+                duration-300
+                hover:shadow-[0_0_40px_#22d3ee]
             "
-          >
-            INITIALIZE MISSION →
-          </motion.button>
+            >
+            ▶ INITIALIZE MISSION
+            </motion.button>
 
         </motion.div>
 
-      </div>
+        </div>
 
     </section>
   );
