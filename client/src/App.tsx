@@ -1,11 +1,7 @@
-import CyberRoom from "./pages/CyberRoom"
+import Home from "./pages/Home";
 
 function App() {
-
-  return (
-    <CyberRoom />
-  )
-
+  return <Home />;
 }
 
-export default App
+export default App;
