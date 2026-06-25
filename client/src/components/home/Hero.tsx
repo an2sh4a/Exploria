@@ -7,11 +7,19 @@ export default function Hero() {
 
       {/* Background */}
 
-      <img
+    <motion.img
         src={background}
         alt="Exploria"
+        initial={{ scale: 1 }}
+        animate={{ scale: 1.12 }}
+        transition={{
+            duration: 10,
+            ease: "easeInOut",
+            repeat: Infinity,
+            repeatType: "reverse",
+        }}
         className="absolute inset-0 w-full h-full object-cover"
-      />
+    />
 
       {/* Dark Overlay */}
 
