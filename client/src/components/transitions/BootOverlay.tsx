@@ -1,104 +1,202 @@
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import background from "../../assets/images/home/hero-background.avif";
 
 interface BootOverlayProps {
   show: boolean;
 }
 
+const logs = [
+  "Authenticating Explorer...",
+  "Connecting to Cyber Academy...",
+  "Loading Mission Database...",
+  "Scanning Digital Environment...",
+  "Preparing Escape Room..."
+];
+
 export default function BootOverlay({ show }: BootOverlayProps) {
+
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+
+    if (!show) {
+      setProgress(0);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+
+      const interval = setInterval(() => {
+
+        setProgress((prev) => {
+
+          if (prev >= logs.length) {
+            clearInterval(interval);
+            return prev;
+          }
+
+          return prev + 1;
+
+        });
+
+      }, 1300);
+
+      return () => clearInterval(interval);
+
+    }, 1400);
+
+    return () => clearTimeout(timeout);
+
+  }, [show]);
+
   if (!show) return null;
 
   return (
+
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 1.2 }}
-      className="fixed inset-0 z-[9999] overflow-hidden"
+      transition={{ duration: 1.5 }}
+      className="fixed inset-0 z-[9999] overflow-hidden flex items-center justify-center"
     >
+
       {/* Background */}
 
       <motion.img
         src={background}
-        alt="Boot Background"
+        alt=""
         initial={{ scale: 1.12 }}
-        animate={{ scale: 1.22 }}
+        animate={{ scale: 1.24 }}
         transition={{
-          duration: 8,
-          ease: "easeInOut",
+          duration: 10,
+          ease: "easeInOut"
         }}
         className="absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* Dark Overlay */}
+      {/* Overlay */}
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.88 }}
-        transition={{ duration: 1.5 }}
-        className="absolute inset-0 bg-black"
-      />
+      <div className="absolute inset-0 bg-black/90 backdrop-blur-2xl" />
 
-      {/* Cyan Glow */}
+      {/* Content */}
 
-      <div className="absolute inset-0 bg-gradient-to-r from-cyan-950/40 via-black/20 to-transparent" />
+      <div className="relative z-10 text-center w-full max-w-4xl px-10">
 
-      {/* Boot Content */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{
+            delay: 0.7,
+            duration: 0.8
+          }}
+          className="text-cyan-300 text-2xl font-mono tracking-widest"
+        >
+          Initializing World...
+        </motion.p>
 
-      <div className="relative z-10 h-full flex items-center">
+        {/* Segmented Loader */}
 
-        <div className="ml-24 max-w-2xl">
+        <div className="flex justify-center gap-4 mt-16">
 
-          <motion.h1
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              delay: 0.8,
-              duration: 0.8,
-            }}
-            className="text-cyan-400 text-5xl font-bold tracking-[0.35em]"
-          >
-            EXPLORIA OS
-          </motion.h1>
+          {logs.map((_, index) => (
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{
-              delay: 1.4,
-            }}
-            className="mt-10 text-cyan-300 font-mono text-xl"
-          >
-            Initializing Explorer Interface...
-          </motion.p>
+            <motion.div
+              key={index}
+              animate={
+                progress === index + 1
+                  ? {
+                      scale: [1, 1.25, 1]
+                    }
+                  : {}
+              }
+              transition={{
+                duration: 0.5
+              }}
+              className={`h-5 w-16 rounded-md transition-all duration-700 ${
+                progress > index
+                  ? "bg-cyan-400 shadow-[0_0_20px_#22d3ee]"
+                  : "bg-zinc-700"
+              }`}
+            />
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{
-              delay: 2,
-            }}
-            className="mt-10"
-          >
-            <div className="h-3 rounded-full bg-zinc-800 overflow-hidden">
+          ))}
 
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{
-                  delay: 2.2,
-                  duration: 4,
-                  ease: "easeInOut",
-                }}
-                className="h-full bg-cyan-400"
-              />
+        </div>
 
-            </div>
-          </motion.div>
+        {/* Current Status */}
+
+        <motion.p
+          key={progress}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="mt-14 text-cyan-200 text-xl font-mono"
+        >
+
+          {progress === 0
+            ? "Preparing Interface..."
+            : progress === logs.length
+            ? "Cyber Guide Online"
+            : logs[progress - 1]}
+
+        </motion.p>
+
+        {/* Completed Logs */}
+
+        <div className="mt-16 max-w-xl mx-auto text-left space-y-3">
+
+          {logs.slice(0, progress).map((item, index) => (
+
+            <motion.p
+              key={index}
+              initial={{
+                opacity: 0,
+                x: -15
+              }}
+              animate={{
+                opacity: 1,
+                x: 0
+              }}
+              className="text-green-400 font-mono"
+            >
+              ✓ {item}
+            </motion.p>
+
+          ))}
+
+          {progress === logs.length && (
+
+            <motion.div
+              initial={{
+                opacity: 0
+              }}
+              animate={{
+                opacity: 1
+              }}
+              transition={{
+                delay: 0.5
+              }}
+              className="mt-10 text-center"
+            >
+
+              <p className="text-cyan-300 text-2xl font-semibold">
+                Cyber Guide
+              </p>
+
+              <p className="mt-3 text-zinc-300 text-lg">
+                Welcome, Explorer.
+              </p>
+
+            </motion.div>
+
+          )}
 
         </div>
 
       </div>
 
     </motion.div>
+
   );
+
 }
