@@ -6,7 +6,7 @@ const particles = Array.from({ length: 25 }, (_, i) => ({
   top: Math.random() * 100,
   size: Math.random() * 4 + 2,
   duration: Math.random() * 8 + 10,
-  delay: Math.random() * 5,
+  delay: 0,
 }));
 
 export default function Particles() {
