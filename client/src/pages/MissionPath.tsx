@@ -1,168 +1,99 @@
 import MissionNode from "../components/mission/MissionNode";
-
 import background from "../assets/images/mission/cybermap.png";
+import "./MissionPath.css";
 
 
 const missions = [
-
   {
-    number: 1,
-    status: "completed",
-    x: "45%",
+    id: 1,
+    x: 30,
+    y: 82,
+    unlocked: true,
   },
-
   {
-    number: 2,
-    status: "current",
-    x: "58%",
+    id: 2,
+    x: 58,
+    y: 70,
+    unlocked: false,
   },
-
   {
-    number: 3,
-    status: "locked",
-    x: "42%",
+    id: 3,
+    x: 38,
+    y: 55,
+    unlocked: false,
   },
-
   {
-    number: 4,
-    status: "locked",
-    x: "60%",
+    id: 4,
+    x: 65,
+    y: 40,
+    unlocked: false,
   },
-
   {
-    number: 5,
-    status: "locked",
-    x: "43%",
+    id: 5,
+    x: 45,
+    y: 25,
+    unlocked: false,
   },
-
-  {
-    number: 6,
-    status: "locked",
-    x: "57%",
-  },
-
-  {
-    number: 7,
-    status: "locked",
-    x: "45%",
-  },
-
-  {
-    number: 8,
-    status: "locked",
-    x: "55%",
-  },
-
-] as const;
+];
 
 
+export default function MissionPath(){
 
-export default function MissionPath() {
+return (
 
-
-  return (
-
-    <div className="relative h-screen overflow-hidden bg-black">
-
-
-      {/* Background */}
-
-
-      <img
-
-        src={background}
-
-        alt="Cyber Map"
-
-        className="
-          absolute
-          inset-0
-          w-full
-          h-full
-          object-cover
-        "
-
-      />
+<div
+className="mission-map"
+style={{
+backgroundImage:`url(${background})`
+}}
+>
 
 
-      {/* Dark Overlay */}
+<div className="map-overlay"></div>
 
 
-      <div className="absolute inset-0 bg-black/40" />
+<svg
+className="mission-route"
+viewBox="0 0 100 100"
+preserveAspectRatio="none"
+>
+
+<path
+d="
+M30 82
+C45 78 50 72 58 70
+C70 66 55 56 38 55
+C25 52 45 42 65 40
+C80 37 60 28 45 25
+"
+/>
+
+</svg>
 
 
 
-      {/* Header */}
+{missions.map((mission)=>(
+
+<MissionNode
+
+key={mission.id}
+
+number={mission.id}
+
+x={mission.x}
+
+y={mission.y}
+
+unlocked={mission.unlocked}
+
+/>
+
+))}
 
 
-      <div className="absolute top-8 left-10 z-10">
-
-        <h1 className="
-          text-5xl
-          font-black
-          text-exploria-gradient
-        ">
-          Cyber Academy
-        </h1>
+</div>
 
 
-        <p className="text-zinc-300 mt-3">
-
-          Database Systems
-
-        </p>
-
-      </div>
-
-
-
-
-      {/* Mission Nodes */}
-
-
-      <div className="
-        relative
-        z-10
-        h-full
-        flex
-        flex-col-reverse
-        justify-center
-        gap-8
-      ">
-
-
-        {missions.map((mission) => (
-
-          <div
-
-            key={mission.number}
-
-            className="relative flex"
-
-            style={{
-              marginLeft: mission.x,
-            }}
-
-          >
-
-            <MissionNode
-
-              number={mission.number}
-
-              status={mission.status}
-
-            />
-
-          </div>
-
-        ))}
-
-
-      </div>
-
-
-    </div>
-
-  );
+)
 
 }
