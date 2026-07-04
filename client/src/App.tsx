@@ -1,9 +1,28 @@
+import { Routes, Route } from "react-router-dom";
+
 import Home from "./pages/Home";
-// import CyberRoom from "./pages/CyberRoom";
+import MissionPath from "./pages/MissionPath";
+import CyberRoom from "./pages/CyberRoom";
 
-function App() {
-  return <Home />;
-  // return <CyberRoom />;
+export default function App() {
+  return (
+    <Routes>
+
+      <Route 
+        path="/" 
+        element={<Home />} 
+      />
+
+      <Route 
+        path="/missions" 
+        element={<MissionPath />} 
+      />
+
+      <Route 
+        path="/cyber" 
+        element={<CyberRoom />} 
+      />
+
+    </Routes>
+  );
 }
-
-export default App;
