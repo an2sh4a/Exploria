@@ -1,7 +1,9 @@
 import MissionNode from "../components/mission/MissionNode";
-import background from "../assets/images/mission/cybermap.png";
-import "./MissionPath.css";
+import MissionPathLine from "../components/mission/MissionPathLine";
 
+import background from "../assets/images/mission/cybermap.png";
+
+import "./MissionPath.css";
 
 const missions = [
   {
@@ -36,64 +38,39 @@ const missions = [
   },
 ];
 
+export default function MissionPath() {
+  return (
+    <div
+      className="mission-map"
+      style={{
+        backgroundImage: `url(${background})`,
+      }}
+    >
 
-export default function MissionPath(){
+      <div className="map-overlay" />
 
-return (
+      <div className="absolute top-8 left-10 z-30">
+        <h1 className="text-5xl font-black text-cyan-300">
+          Cyber Academy
+        </h1>
 
-<div
-className="mission-map"
-style={{
-backgroundImage:`url(${background})`
-}}
->
+        <p className="text-cyan-100 mt-2 tracking-widest">
+          DATABASE SYSTEMS
+        </p>
+      </div>
 
+      <MissionPathLine />
 
-<div className="map-overlay"></div>
+      {missions.map((mission) => (
+        <MissionNode
+          key={mission.id}
+          number={mission.id}
+          x={mission.x}
+          y={mission.y}
+          unlocked={mission.unlocked}
+        />
+      ))}
 
-
-<svg
-className="mission-route"
-viewBox="0 0 100 100"
-preserveAspectRatio="none"
->
-
-<path
-d="
-M30 82
-C45 78 50 72 58 70
-C70 66 55 56 38 55
-C25 52 45 42 65 40
-C80 37 60 28 45 25
-"
-/>
-
-</svg>
-
-
-
-{missions.map((mission)=>(
-
-<MissionNode
-
-key={mission.id}
-
-number={mission.id}
-
-x={mission.x}
-
-y={mission.y}
-
-unlocked={mission.unlocked}
-
-/>
-
-))}
-
-
-</div>
-
-
-)
-
+    </div>
+  );
 }
