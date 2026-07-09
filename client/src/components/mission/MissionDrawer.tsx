@@ -1,0 +1,180 @@
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
+
+interface Props {
+  open:boolean;
+  onClose:()=>void;
+}
+
+export default function MissionDrawer({
+  open,
+  onClose,
+}:Props){
+
+return(
+
+<AnimatePresence>
+
+{open && (
+
+<motion.div
+
+initial={{
+x:400,
+opacity:0,
+}}
+
+animate={{
+x:0,
+opacity:1,
+}}
+
+exit={{
+x:400,
+opacity:0,
+}}
+
+transition={{
+duration:0.4,
+}}
+
+className="
+absolute
+right-8
+top-28
+
+z-50
+
+w-[380px]
+
+rounded-3xl
+
+bg-black/60
+backdrop-blur-xl
+
+border
+border-cyan-400/40
+
+p-7
+
+shadow-[0_0_40px_rgba(34,211,238,0.25)]
+"
+
+>
+
+
+<button
+
+onClick={onClose}
+
+className="
+absolute
+right-5
+top-5
+
+text-cyan-300
+"
+
+>
+
+<X/>
+
+</button>
+
+
+
+<p
+className="
+tracking-[0.3em]
+text-cyan-300
+text-sm
+"
+>
+MISSION 01
+</p>
+
+
+<h2
+className="
+text-white
+text-4xl
+font-black
+mt-4
+"
+>
+Database Breach
+</h2>
+
+
+<p
+className="
+text-zinc-300
+mt-5
+leading-7
+"
+>
+
+The academy database firewall has been compromised.
+
+Trace the vulnerability and restore access.
+
+</p>
+
+
+
+<div className="mt-8 space-y-3 text-cyan-100">
+
+<p>
+Difficulty : Beginner
+</p>
+
+<p>
+Concept : SQL Basics
+</p>
+
+<p>
+Reward : +100 XP
+</p>
+
+</div>
+
+
+
+<button
+
+className="
+mt-10
+
+w-full
+
+py-4
+
+rounded-xl
+
+bg-cyan-400
+
+text-black
+
+font-bold
+
+hover:shadow-[0_0_25px_#22d3ee]
+
+transition
+"
+
+>
+
+ENTER MISSION
+
+</button>
+
+
+</motion.div>
+
+)}
+
+</AnimatePresence>
+
+)
+
+}

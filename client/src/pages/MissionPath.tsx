@@ -1,8 +1,11 @@
+import { useState } from "react";
+
 import MissionNode from "../components/mission/MissionNode";
 import MissionPathLine from "../components/mission/MissionPathLine";
+import CyberHUD from "../components/mission/CyberHUD";
+import MissionDrawer from "../components/mission/MissionDrawer";
 
 import background from "../assets/images/mission/cybermap.png";
-import CyberHUD from "../components/mission/CyberHUD";
 
 import "./MissionPath.css";
 
@@ -40,7 +43,11 @@ const missions = [
 ];
 
 export default function MissionPath() {
+
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   return (
+
     <div
       className="mission-map"
       style={{
@@ -50,26 +57,51 @@ export default function MissionPath() {
 
       <div className="map-overlay" />
 
-      <div className="absolute top-8 left-10 z-30">
-  
-
-        <p className="text-cyan-100 mt-2 tracking-widest">
-          DATABASE SYSTEMS
-        </p>
-      </div>
-
       <MissionPathLine />
+
       <CyberHUD />
+
+
       {missions.map((mission) => (
+
         <MissionNode
+
           key={mission.id}
+
           number={mission.id}
+
           x={mission.x}
+
           y={mission.y}
+
           unlocked={mission.unlocked}
+
+          onClick={() => {
+
+            if (mission.unlocked) {
+
+              setDrawerOpen(true);
+
+            }
+
+          }}
+
         />
+
       ))}
 
+
+      <MissionDrawer
+
+        open={drawerOpen}
+
+        onClose={() => setDrawerOpen(false)}
+
+      />
+
+
     </div>
+
   );
+
 }
