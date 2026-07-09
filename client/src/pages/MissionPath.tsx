@@ -2,6 +2,7 @@ import MissionNode from "../components/mission/MissionNode";
 import MissionPathLine from "../components/mission/MissionPathLine";
 
 import background from "../assets/images/mission/cybermap.png";
+import CyberHUD from "../components/mission/CyberHUD";
 
 import "./MissionPath.css";
 
@@ -50,9 +51,7 @@ export default function MissionPath() {
       <div className="map-overlay" />
 
       <div className="absolute top-8 left-10 z-30">
-        <h1 className="text-5xl font-black text-cyan-300">
-          Cyber Academy
-        </h1>
+  
 
         <p className="text-cyan-100 mt-2 tracking-widest">
           DATABASE SYSTEMS
@@ -60,7 +59,7 @@ export default function MissionPath() {
       </div>
 
       <MissionPathLine />
-
+      <CyberHUD />
       {missions.map((mission) => (
         <MissionNode
           key={mission.id}
