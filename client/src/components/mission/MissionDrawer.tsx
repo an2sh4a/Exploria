@@ -2,179 +2,190 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
 interface Props {
-  open:boolean;
-  onClose:()=>void;
+  open: boolean;
+  onClose: () => void;
 }
 
 export default function MissionDrawer({
   open,
   onClose,
-}:Props){
+}: Props) {
+  return (
+    <AnimatePresence>
 
-return(
+      {open && (
 
-<AnimatePresence>
+        <motion.div
+          initial={{
+            x: 350,
+            opacity: 0,
+          }}
+          animate={{
+            x: 0,
+            opacity: 1,
+          }}
+          exit={{
+            x: 350,
+            opacity: 0,
+          }}
+          transition={{
+            duration: 0.4,
+          }}
 
-{open && (
+          className="
+            absolute
 
-<motion.div
+            right-8
+            top-24
 
-initial={{
-x:400,
-opacity:0,
-}}
+            z-50
 
-animate={{
-x:0,
-opacity:1,
-}}
+            w-[310px]
 
-exit={{
-x:400,
-opacity:0,
-}}
+            rounded-2xl
 
-transition={{
-duration:0.4,
-}}
+            bg-black/60
+            backdrop-blur-xl
 
-className="
-absolute
-right-8
-top-28
+            border
+            border-cyan-400/40
 
-z-50
+            p-5
 
-w-[380px]
-
-rounded-3xl
-
-bg-black/60
-backdrop-blur-xl
-
-border
-border-cyan-400/40
-
-p-7
-
-shadow-[0_0_40px_rgba(34,211,238,0.25)]
-"
-
->
+            shadow-[0_0_35px_rgba(34,211,238,0.25)]
+          "
+        >
 
 
-<button
+          <button
+            onClick={onClose}
 
-onClick={onClose}
+            className="
+              absolute
+              right-4
+              top-4
 
-className="
-absolute
-right-5
-top-5
+              text-cyan-300
+            "
+          >
 
-text-cyan-300
-"
+            <X size={18}/>
 
->
-
-<X/>
-
-</button>
+          </button>
 
 
 
-<p
-className="
-tracking-[0.3em]
-text-cyan-300
-text-sm
-"
->
-MISSION 01
-</p>
-
-
-<h2
-className="
-text-white
-text-4xl
-font-black
-mt-4
-"
->
-Database Breach
-</h2>
-
-
-<p
-className="
-text-zinc-300
-mt-5
-leading-7
-"
->
-
-The academy database firewall has been compromised.
-
-Trace the vulnerability and restore access.
-
-</p>
+          <p
+            className="
+              tracking-[0.3em]
+              text-cyan-300
+              text-xs
+            "
+          >
+            MISSION 01
+          </p>
 
 
 
-<div className="mt-8 space-y-3 text-cyan-100">
+          <h2
+            className="
+              text-white
 
-<p>
-Difficulty : Beginner
-</p>
+              text-3xl
 
-<p>
-Concept : SQL Basics
-</p>
+              font-black
 
-<p>
-Reward : +100 XP
-</p>
+              mt-3
+            "
+          >
 
-</div>
+            Database Breach
 
-
-
-<button
-
-className="
-mt-10
-
-w-full
-
-py-4
-
-rounded-xl
-
-bg-cyan-400
-
-text-black
-
-font-bold
-
-hover:shadow-[0_0_25px_#22d3ee]
-
-transition
-"
-
->
-
-ENTER MISSION
-
-</button>
+          </h2>
 
 
-</motion.div>
 
-)}
+          <p
+            className="
+              text-zinc-300
 
-</AnimatePresence>
+              mt-4
 
-)
+              leading-6
 
+              text-sm
+            "
+          >
+
+            The academy database firewall has been compromised.
+
+            Trace the vulnerability and restore access.
+
+          </p>
+
+
+
+          <div
+            className="
+              mt-6
+
+              space-y-2
+
+              text-sm
+
+              text-cyan-100
+            "
+          >
+
+            <p>
+              Difficulty : Beginner
+            </p>
+
+            <p>
+              Concept : SQL Basics
+            </p>
+
+            <p>
+              Reward : +100 XP
+            </p>
+
+          </div>
+
+
+
+          <button
+            className="
+              mt-7
+
+              w-full
+
+              py-3
+
+              rounded-xl
+
+              bg-cyan-400
+
+              text-black
+
+              text-sm
+
+              font-bold
+
+              hover:shadow-[0_0_25px_#22d3ee]
+
+              transition
+            "
+          >
+
+            ENTER MISSION
+
+          </button>
+
+
+        </motion.div>
+
+      )}
+
+    </AnimatePresence>
+  );
 }
