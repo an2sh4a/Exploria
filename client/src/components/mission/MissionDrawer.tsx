@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 
 interface Props {
@@ -10,6 +11,7 @@ export default function MissionDrawer({
   open,
   onClose,
 }: Props) {
+    const navigate = useNavigate();
   return (
     <AnimatePresence>
 
@@ -153,34 +155,24 @@ export default function MissionDrawer({
 
 
 
-          <button
-            className="
-              mt-7
+         <button
+                onClick={() => navigate("/cyber-room")}
 
-              w-full
+                className="
+                    mt-7
+                    w-full
+                    py-3
+                    rounded-xl
+                    bg-cyan-400
+                    text-black
+                    text-sm
+                    font-bold
+                "
+                >
 
-              py-3
+                ENTER MISSION
 
-              rounded-xl
-
-              bg-cyan-400
-
-              text-black
-
-              text-sm
-
-              font-bold
-
-              hover:shadow-[0_0_25px_#22d3ee]
-
-              transition
-            "
-          >
-
-            ENTER MISSION
-
-          </button>
-
+            </button>
 
         </motion.div>
 

@@ -8,19 +8,19 @@ export default function App() {
   return (
     <Routes>
 
-      <Route 
-        path="/" 
-        element={<Home />} 
+      <Route
+        path="/"
+        element={<Home />}
       />
 
-      <Route 
-        path="/missions" 
-        element={<MissionPath />} 
+      <Route
+        path="/missions"
+        element={<MissionPath />}
       />
 
-      <Route 
-        path="/cyber" 
-        element={<CyberRoom />} 
+      <Route
+        path="/cyber-room"
+        element={<CyberRoom />}
       />
 
     </Routes>
