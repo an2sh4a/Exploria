@@ -15,7 +15,6 @@ interface HotspotProps {
 }
 
 export default function Hotspot({
-  id,
   top,
   left,
   width,
@@ -29,7 +28,7 @@ export default function Hotspot({
         scale: 0.98,
       }}
       transition={{
-        duration: 0.2,
+        duration: 0.15,
       }}
       onClick={onClick}
       className="
@@ -37,6 +36,7 @@ export default function Hotspot({
         z-20
         cursor-pointer
         rounded-lg
+        overflow-hidden
       "
       style={{
         top,
@@ -46,55 +46,25 @@ export default function Hotspot({
       }}
     >
       {visible && (
-        <>
-          {/* Glow */}
+        <motion.div
+          initial={{
+            opacity: 0,
+          }}
+          animate={{
+            opacity: 0.08,
+          }}
+          whileTap={{
+            opacity: 0.18,
+          }}
+          className="
+            absolute
+            inset-0
 
-          <div
-            className="
-              absolute
-              inset-0
+            rounded-lg
 
-              rounded-lg
-
-              border-2
-              border-cyan-300
-
-              bg-cyan-400/10
-
-              shadow-[0_0_18px_rgba(34,211,238,0.7)]
-            "
-          />
-
-          {/* Label */}
-
-          <div
-            className="
-              absolute
-
-              -top-7
-              left-1/2
-
-              -translate-x-1/2
-
-              whitespace-nowrap
-
-              rounded-md
-
-              bg-black/80
-
-              px-2
-              py-1
-
-              text-[10px]
-
-              tracking-widest
-
-              text-cyan-300
-            "
-          >
-            {id.toUpperCase()}
-          </div>
-        </>
+            bg-cyan-300
+          "
+        />
       )}
     </motion.button>
   );
