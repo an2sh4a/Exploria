@@ -5,7 +5,41 @@ interface Props {
   onComplete: () => void;
 }
 
-type Screen = "boot" | "logs";
+type Screen = "boot" | "logs" | "investigation";
+
+interface Log {
+  id: number;
+  title: string;
+  time: string;
+  suspicious: boolean;
+}
+
+const logs: Log[] = [
+  {
+    id: 1,
+    time: "08:11",
+    title: "Student Login Successful",
+    suspicious: false,
+  },
+  {
+    id: 2,
+    time: "08:18",
+    title: "Database Backup Completed",
+    suspicious: false,
+  },
+  {
+    id: 3,
+    time: "08:23",
+    title: "Unknown Administrator Login",
+    suspicious: true,
+  },
+  {
+    id: 4,
+    time: "08:29",
+    title: "Library Portal Updated",
+    suspicious: false,
+  },
+];
 
 export default function TerminalPuzzle({
   onComplete,
@@ -47,18 +81,22 @@ export default function TerminalPuzzle({
     return "ACCESS GRANTED";
   }
 
+  function collectEvidence() {
+    if (!hasItem("ip-log")) {
+      addItem({
+        id: "ip-log",
+        title: "Suspicious IP",
+        description: "192.168.10.44",
+      });
+    }
+
+    onComplete();
+  }
+
   if (screen === "boot") {
     return (
-      <div
-        className="
-          rounded-xl
-          border
-          border-cyan-500/40
-          bg-[#020406]
-          p-6
-          font-mono
-        "
-      >
+      <div className="rounded-xl border border-cyan-500/40 bg-[#020406] p-6 font-mono">
+
         <h2 className="mb-6 text-xl font-bold text-cyan-300">
           UNIVERSITY SECURITY TERMINAL
         </h2>
@@ -67,17 +105,19 @@ export default function TerminalPuzzle({
 
           <p>{"> Boot Sequence Started..."}</p>
 
-          <p>{"> {getStatus()}"}</p>
+          <p>{"> " + getStatus()}</p>
 
           <div className="mt-6">
 
             <div className="h-3 overflow-hidden rounded-full bg-zinc-800">
+
               <div
                 className="h-full bg-cyan-400 transition-all duration-75"
                 style={{
                   width: `${progress}%`,
                 }}
               />
+
             </div>
 
             <div className="mt-2 flex justify-between text-xs text-cyan-300">
@@ -90,17 +130,60 @@ export default function TerminalPuzzle({
 
           </div>
 
-          <div className="mt-8 rounded-lg border border-zinc-700 bg-black p-4 text-sm text-green-500">
+        </div>
 
-            <p>{"> Establishing encrypted connection..."}</p>
+      </div>
+    );
+  }
 
-            <p>{"> Verifying credentials..."}</p>
+  if (screen === "logs") {
+    return (
+      <div className="rounded-xl border border-cyan-500/40 bg-[#020406] p-6 font-mono">
 
-            <p>{"> Accessing university server..."}</p>
+        <h2 className="mb-6 text-xl font-bold text-cyan-300">
+          AUTHENTICATION LOGS
+        </h2>
 
-            <p>{"> Please wait..."}</p>
+        <div className="space-y-3">
 
-          </div>
+          {logs.map((log) => (
+
+            <button
+              key={log.id}
+              onClick={() => {
+                if (log.suspicious) {
+                  setScreen("investigation");
+                }
+              }}
+              className={`
+                w-full
+                rounded-lg
+                border
+                p-4
+                text-left
+                transition
+
+                ${
+                  log.suspicious
+                    ? "border-yellow-500 bg-yellow-500/10 hover:bg-yellow-500/20"
+                    : "border-zinc-700 bg-black"
+                }
+              `}
+            >
+
+              <p
+                className={
+                  log.suspicious
+                    ? "font-semibold text-yellow-300"
+                    : "text-green-400"
+                }
+              >
+                [{log.time}] {log.title}
+              </p>
+
+            </button>
+
+          ))}
 
         </div>
 
@@ -109,56 +192,69 @@ export default function TerminalPuzzle({
   }
 
   return (
-    <div
-      className="
-        rounded-xl
-        border
-        border-cyan-500/40
-        bg-[#020406]
-        p-6
-        font-mono
-      "
-    >
+    <div className="rounded-xl border border-cyan-500/40 bg-[#020406] p-6 font-mono">
+
       <h2 className="mb-6 text-xl font-bold text-cyan-300">
-        AUTHENTICATION LOGS
+        INVESTIGATION REPORT
       </h2>
 
-      <div className="space-y-3">
+      <div className="space-y-5">
 
-        <div className="rounded-lg border border-zinc-700 bg-black p-4 text-green-400">
-          <p>[08:11] Student Login Successful</p>
+        <div className="rounded-lg border border-yellow-500 bg-yellow-500/10 p-4">
+
+          <h3 className="font-bold text-yellow-300">
+            Unknown Administrator Login
+          </h3>
+
+          <div className="mt-4 space-y-2 text-green-400">
+
+            <p>User : admin</p>
+
+            <p>Device : Unknown Linux Machine</p>
+
+            <p>IP Address : 192.168.10.44</p>
+
+            <p>Failed Attempts : 7</p>
+
+            <p>Status : HIGH RISK</p>
+
+          </div>
+
         </div>
 
-        <div className="rounded-lg border border-zinc-700 bg-black p-4 text-green-400">
-          <p>[08:18] Database Backup Completed</p>
+        <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/5 p-4">
+
+          <h3 className="font-semibold text-cyan-300">
+            Investigation Note
+          </h3>
+
+          <p className="mt-3 text-sm leading-7 text-zinc-300">
+            University systems organize millions of student
+            records efficiently using <b>Data Structures</b>.
+            A Data Structure is a way of organizing and storing
+            data so operations can be performed efficiently.
+          </p>
+
         </div>
 
-        <div
+        <button
+          onClick={collectEvidence}
           className="
-            cursor-pointer
-            rounded-lg
-            border
-            border-yellow-500
-            bg-yellow-500/10
-            p-4
+            w-full
+            rounded-xl
+            bg-cyan-500
+            py-3
+            font-semibold
+            text-black
             transition
-            hover:bg-yellow-500/20
+            hover:bg-cyan-400
           "
         >
-          <p className="font-semibold text-yellow-300">
-            [08:23] Unknown Administrator Login
-          </p>
-
-          <p className="mt-2 text-sm text-zinc-300">
-            Click to investigate this suspicious activity...
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-zinc-700 bg-black p-4 text-green-400">
-          <p>[08:29] Library Portal Updated</p>
-        </div>
+          Extract Suspicious IP
+        </button>
 
       </div>
+
     </div>
   );
 }
