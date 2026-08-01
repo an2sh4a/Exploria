@@ -1,6 +1,4 @@
-import { useState } from "react";
-
-import { useInventory } from "../../contexts/InventoryContext";
+import { useEffect, useState } from "react";
 
 interface Props {
   onComplete: () => void;
@@ -9,156 +7,105 @@ interface Props {
 export default function TerminalPuzzle({
   onComplete,
 }: Props) {
+  const [progress, setProgress] = useState(0);
 
-  const { addItem, hasItem } = useInventory();
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
 
-  const [step, setStep] = useState(0);
+          setTimeout(() => {
+            onComplete();
+          }, 700);
 
-  function next() {
-    setStep((prev) => prev + 1);
-  }
+          return 100;
+        }
 
-  function collectEvidence() {
-
-    if (!hasItem("ip-log")) {
-
-      addItem({
-        id: "ip-log",
-        title: "Suspicious IP",
-        description: "192.168.10.44",
+        return prev + 2;
       });
+    }, 50);
 
-    }
+    return () => clearInterval(interval);
+  }, [onComplete]);
 
-    onComplete();
+  function getStatus() {
+    if (progress < 20) return "Initializing Security Terminal...";
+    if (progress < 40) return "Loading Secure Kernel...";
+    if (progress < 60) return "Authenticating Administrator...";
+    if (progress < 80) return "Reading Server Logs...";
+    if (progress < 100) return "Decrypting Security Records...";
 
+    return "ACCESS GRANTED";
   }
 
   return (
-
     <div
       className="
+        rounded-xl
+        border
+        border-cyan-500/40
+        bg-[#020406]
+        p-6
         font-mono
-        text-sm
-        text-green-400
       "
     >
+      <h2 className="mb-6 text-xl font-bold text-cyan-300">
+        UNIVERSITY SECURITY TERMINAL
+      </h2>
 
-      {step === 0 && (
+      <div className="space-y-4 text-green-400">
 
-        <div className="space-y-3">
+        <p>{"> Boot Sequence Started..."}</p>
 
-          <p>{"> Booting Secure Terminal..."}</p>
+        <p>{"> {getStatus()}"}</p>
 
-          <p>{"> Connecting..."}</p>
+        <div className="mt-6">
 
-          <p>{"> Authentication Successful."}</p>
-
-          <button
-            onClick={next}
+          <div
             className="
-              mt-5
-
-              rounded-lg
-
-              bg-cyan-500
-
-              px-5
-
-              py-2
-
-              font-semibold
-
-              text-black
+              h-3
+              overflow-hidden
+              rounded-full
+              bg-zinc-800
             "
           >
-            Continue
-          </button>
+            <div
+              className="
+                h-full
+                bg-cyan-400
+                transition-all
+                duration-75
+              "
+              style={{
+                width: `${progress}%`,
+              }}
+            />
+          </div>
+
+          <div className="mt-2 flex justify-between text-xs text-cyan-300">
+
+            <span>Loading...</span>
+
+            <span>{progress}%</span>
+
+          </div>
 
         </div>
 
-      )}
+        <div className="mt-8 rounded-lg border border-zinc-700 bg-black p-4 text-sm text-green-500">
 
-      {step === 1 && (
+          <p>{"> Establishing encrypted connection..."}</p>
 
-        <div className="space-y-3">
+          <p>{"> Verifying credentials..."}</p>
 
-          <p>{"> Reading Server Logs..."}</p>
+          <p>{"> Accessing university server..."}</p>
 
-          <p>{"> 7 Failed Login Attempts Detected."}</p>
-
-          <p>{"> Searching For Network Activity..."}</p>
-
-          <button
-            onClick={next}
-            className="
-              mt-5
-
-              rounded-lg
-
-              bg-cyan-500
-
-              px-5
-
-              py-2
-
-              font-semibold
-
-              text-black
-            "
-          >
-            Analyze Logs
-          </button>
+          <p>{"> Please wait..."}</p>
 
         </div>
 
-      )}
-
-      {step === 2 && (
-
-        <div className="space-y-3">
-
-          <p className="text-yellow-300">
-            ALERT
-          </p>
-
-          <p>{"> Suspicious Address Found"}</p>
-
-          <p className="text-cyan-300 text-lg font-bold">
-            192.168.10.44
-          </p>
-
-          <p>
-            The attacker left traces inside the authentication server.
-          </p>
-
-          <button
-            onClick={collectEvidence}
-            className="
-              mt-6
-
-              w-full
-
-              rounded-xl
-
-              bg-cyan-500
-
-              py-3
-
-              font-bold
-
-              text-black
-            "
-          >
-            Collect Evidence
-          </button>
-
-        </div>
-
-      )}
-
+      </div>
     </div>
-
   );
-
 }
