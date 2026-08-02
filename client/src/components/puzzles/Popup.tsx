@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
+import { X, Monitor, ShieldCheck, Circle } from "lucide-react";
 import { ReactNode } from "react";
 
 interface PopupProps {
@@ -17,147 +17,166 @@ export default function Popup({
 }: PopupProps) {
   return (
     <AnimatePresence>
-
       {open && (
-
         <motion.div
-          initial={{
-            opacity: 0,
-          }}
-
-          animate={{
-            opacity: 1,
-          }}
-
-          exit={{
-            opacity: 0,
-          }}
-
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           className="
             fixed
             inset-0
             z-50
-
             flex
             items-center
             justify-center
-
-            bg-black/70
-            backdrop-blur-sm
+            bg-black/75
+            backdrop-blur-md
           "
         >
-
           <motion.div
-
             initial={{
-              scale: 0.9,
               opacity: 0,
+              scale: 0.96,
+              y: 20,
             }}
-
             animate={{
-              scale: 1,
               opacity: 1,
+              scale: 1,
+              y: 0,
             }}
-
             exit={{
-              scale: 0.9,
               opacity: 0,
+              scale: 0.96,
+              y: 20,
             }}
-
             transition={{
               duration: 0.25,
             }}
-
             className="
-              relative
-
-              w-[720px]
-              max-w-[90vw]
-
+              flex
+              h-[82vh]
+              w-[92vw]
+              max-w-[1250px]
+              flex-col
+              overflow-hidden
               rounded-2xl
-
               border
-              border-cyan-500
-
-              bg-[#05070b]
-
-              shadow-[0_0_40px_rgba(34,211,238,0.3)]
+              border-cyan-500/30
+              bg-[#05070B]
+              shadow-[0_0_50px_rgba(0,255,255,0.15)]
             "
           >
-
-            {/* Header */}
+            {/* Window Header */}
 
             <div
               className="
                 flex
                 items-center
                 justify-between
-
                 border-b
-                border-cyan-500/40
-
+                border-cyan-500/20
+                bg-[#0A0F17]
                 px-6
                 py-4
               "
             >
+              <div className="flex items-center gap-4">
 
-              <h2
-                className="
-                  text-xl
-                  font-bold
-                  tracking-wide
+                <Monitor
+                  size={28}
+                  className="text-cyan-400"
+                />
 
-                  text-cyan-300
-                "
-              >
-                {title}
-              </h2>
+                <div>
 
-              <button
+                  <h2 className="text-lg font-bold tracking-wide text-cyan-300">
+                    {title}
+                  </h2>
 
-                onClick={onClose}
+                  <p className="text-xs text-zinc-400">
+                    Interactive Investigation Module
+                  </p>
 
-                className="
-                  rounded-lg
+                </div>
 
-                  p-2
+              </div>
 
-                  text-zinc-400
+              <div className="flex items-center gap-6">
 
-                  transition
+                <div className="hidden items-center gap-4 lg:flex">
 
-                  hover:bg-zinc-800
+                  <div className="flex items-center gap-2 text-xs text-green-400">
+                    <Circle size={8} fill="currentColor" />
+                    Connected
+                  </div>
 
-                  hover:text-white
-                "
-              >
+                  <div className="flex items-center gap-2 text-xs text-cyan-400">
+                    <ShieldCheck size={14} />
+                    Secure
+                  </div>
 
-                <X size={18} />
+                  <div className="text-xs text-zinc-500">
+                    Read Only
+                  </div>
 
-              </button>
+                </div>
 
+                <button
+                  onClick={onClose}
+                  className="
+                    rounded-lg
+                    p-2
+                    transition
+                    hover:bg-red-500/20
+                    hover:text-red-400
+                  "
+                >
+                  <X size={18} />
+                </button>
+
+              </div>
             </div>
 
-            {/* Body */}
+            {/* Content */}
 
             <div
               className="
-                max-h-[70vh]
+                flex-1
                 overflow-y-auto
-                p-6
+                bg-[#05070B]
+                p-8
               "
             >
-
               {children}
-
             </div>
 
+            {/* Footer */}
+
+            <div
+              className="
+                flex
+                items-center
+                justify-between
+                border-t
+                border-cyan-500/20
+                bg-[#0A0F17]
+                px-6
+                py-3
+                text-xs
+                text-zinc-500
+              "
+            >
+              <span>
+                Exploria Interactive Learning Environment
+              </span>
+
+              <span>
+                Escape Room Module
+              </span>
+            </div>
           </motion.div>
-
         </motion.div>
-
       )}
-
     </AnimatePresence>
   );
 }
