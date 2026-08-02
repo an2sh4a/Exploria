@@ -1,8 +1,12 @@
 import { useState } from "react";
 
 import background from "../assets/images/cyber/background.png";
-
-import Popup from "../components/puzzles/Popup";
+import {
+  Monitor,
+  Laptop,
+  Server,
+} from "lucide-react";
+import GameWindow from "../components/puzzles/GameWindow";
 import TerminalPuzzle from "../components/puzzles/TerminalPuzzle";
 import Hotspot from "../components/puzzles/Hotspot";
 
@@ -186,37 +190,49 @@ const hotspots = [
 
       {/* Popup */}
 
-      <Popup
-  open={activePuzzle !== null}
-  title={
-    activePuzzle === "monitor"
-      ? "ACCESS TERMINAL"
-      : activePuzzle === "laptop"
-      ? "FORENSIC LAPTOP"
-      : activePuzzle === "server"
-      ? "SERVER RACK"
-      : ""
-  }
-  onClose={() => setActivePuzzle(null)}
->
-  {activePuzzle === "monitor" && (
-    <TerminalPuzzle
-      onComplete={() => setActivePuzzle(null)}
-    />
-  )}
+      <GameWindow
+        open={activePuzzle !== null}
+        icon={
+          activePuzzle === "monitor"
+            ? Monitor
+            : activePuzzle === "laptop"
+            ? Laptop
+            : Server
+        }
+        title={
+          activePuzzle === "monitor"
+            ? "University Security Terminal"
+            : activePuzzle === "laptop"
+            ? "File Recovery Workstation"
+            : "Network Control Panel"
+        }
+        subtitle={
+          activePuzzle === "monitor"
+            ? "AUTH-SERVER-01"
+            : activePuzzle === "laptop"
+            ? "FORENSICS-02"
+            : "NODE-03"
+        }
+        onClose={() => setActivePuzzle(null)}
+      >
+        {activePuzzle === "monitor" && (
+          <TerminalPuzzle
+            onComplete={() => setActivePuzzle(null)}
+          />
+        )}
 
-  {activePuzzle === "laptop" && (
-    <div className="text-zinc-300">
-      Laptop puzzle coming soon...
-    </div>
-  )}
+        {activePuzzle === "laptop" && (
+          <div className="text-zinc-300">
+            Laptop puzzle coming soon...
+          </div>
+        )}
 
-  {activePuzzle === "server" && (
-    <div className="text-zinc-300">
-      Server puzzle coming soon...
-    </div>
-  )}
-</Popup>
+        {activePuzzle === "server" && (
+          <div className="text-zinc-300">
+            Server puzzle coming soon...
+          </div>
+        )}
+      </GameWindow>
     </div>
   );
 }
