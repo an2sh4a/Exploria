@@ -142,6 +142,8 @@ export default function Popup({
 
             <div
               className="
+                max-h-[70vh]
+                overflow-y-auto
                 p-6
               "
             >
