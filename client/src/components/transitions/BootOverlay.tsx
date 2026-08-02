@@ -152,7 +152,7 @@ export default function BootOverlay({
 
 
 
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-pink-900/20" />
+      <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/20 via-transparent to-cyan-900/20" />
 
 
 
@@ -165,24 +165,23 @@ export default function BootOverlay({
         <div className="flex justify-center items-center text-3xl font-semibold tracking-[0.2em]">
 
 
-          <span className="text-exploria-gradient">
+          {/* <span className="text-exploria-gradient color-transparent bg-clip-text">
 
             Initializing
 
-          </span>
+          </span> */}
 
 
 
           <span
 
-            className={`ml-2 text-pink-400 transition-opacity duration-150 ${
+            className={`ml-2 text-blue-400 transition-opacity duration-150 ${
               cursorVisible ? "opacity-100" : "opacity-0"
             }`}
 
           >
-
+            Initializing
             █
-
           </span>
 
 
@@ -236,7 +235,7 @@ export default function BootOverlay({
 
                   progress > index
 
-                    ? "bg-gradient-to-br from-purple-500 to-pink-500 border-pink-300 shadow-[0_0_25px_rgba(236,72,153,0.75)]"
+                    ? "bg-gradient-to-br from-blue-500 to-cyan-500 border-cyan-300 shadow-[0_0_25px_rgba(236,72,153,0.75)]"
 
                     : "bg-zinc-800 border-zinc-700"
 
@@ -313,11 +312,11 @@ export default function BootOverlay({
 
 
 
-              <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-[0_0_12px_rgba(236,72,153,0.8)]" />
+              <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 shadow-[0_0_12px_rgba(236,72,153,0.8)]" />
 
 
 
-              <p className="font-mono text-purple-200">
+              <p className="font-mono text-cyan-200">
 
                 {item}
 
