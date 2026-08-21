@@ -9,6 +9,7 @@ import {
 import GameWindow from "../components/puzzles/shared/GameWindow";
 import MonitorPuzzle from "../components/puzzles/cyber/monitor/MonitorPuzzle";
 import Hotspot from "../components/puzzles/shared/Hotspot";
+import InventoryBar from "../components/puzzles/shared/InventoryBar";
 
 const DEBUG_HOTSPOTS = true;
 
@@ -161,32 +162,7 @@ const hotspots = [
 
       {/* Inventory */}
 
-      <div
-        className="
-          absolute
-          bottom-0
-          left-0
-          flex
-          h-14
-          w-full
-          items-center
-          border-t
-          border-cyan-500
-          bg-black/70
-          px-8
-          backdrop-blur-md
-        "
-      >
-        <h3 className="text-base font-semibold text-cyan-300">
-          Inventory
-        </h3>
-
-        <div className="ml-8 flex gap-3">
-          <div className="h-9 w-9 rounded-lg border border-cyan-500" />
-          <div className="h-9 w-9 rounded-lg border border-cyan-500" />
-          <div className="h-9 w-9 rounded-lg border border-cyan-500" />
-        </div>
-      </div>
+      <InventoryBar />
 
       {/* Popup */}
 
