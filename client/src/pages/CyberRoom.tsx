@@ -13,78 +13,142 @@ import InventoryBar from "../components/puzzles/shared/InventoryBar";
 
 const DEBUG_HOTSPOTS = true;
 
-export default function CyberRoom() {
-  const [activePuzzle, setActivePuzzle] = useState<
-  "monitor" | "laptop" | "server" | null
->(null);
+type PuzzleId =
+  | "monitor"
+  | "keyboard"
+  | "laptop"
+  | "drawer"
+  | "server"
+  | "whiteboard"
+  | "door";
 
-const hotspots = [
-  {
-    id: "Monitor",
-    top: "26%",
-    left: "42.5%",
-    width: "14%",
-    height: "14%",
-    action: () => setActivePuzzle("monitor"),
-  },
-
-  {
-    id: "Keyboard",
-    top: "63.2%",
-    left: "43%",
-    width: "13.5%",
-    height: "4.4%",
-    action: () => setActivePuzzle("laptop"),
-  },
-
-  {
-    id: "Laptop",
-    top: "53.3%",
-    left: "30.5%",
-    width: "7%",
-    height: "9%",
-    action: () => setActivePuzzle("laptop"),
-  },
-
-  {
-    id: "Drawer",
-    top: "76%",
-    left: "24%",
-    width: "10.4%",
-    height: "15.4%",
-    action: () => alert("Drawer puzzle coming soon."),
-  },
-
-  {
-    id: "Server",
-    top: "8%",
-    left: "6.4%",
-    width: "7%",
-    height: "63%",
-    action: () => setActivePuzzle("server"),
-  },
-
-  {
-    id: "Whiteboard",
-    top: "14%",
-    left: "76.5%",
-    width: "10.7%",
-    height: "25.3%",
-    action: () => alert("Whiteboard puzzle coming soon."),
-  },
-
-  {
-    id: "Door",
-    top: "10%",
-    left: "91.5%",
-    width: "9%",
-    height: "67%",
-    action: () => alert("Door locked."),
-  },
+const HOTSPOT_ORDER: PuzzleId[] = [
+  "monitor",
+  "laptop",
+  "keyboard",
+  "drawer",
+  "server",
+  "whiteboard",
+  "door",
 ];
+
+export default function CyberRoom() {
+  const [activePuzzle, setActivePuzzle] =
+    useState<PuzzleId | null>(null);
+
+  /*
+   * Sequential progression.
+   *
+   * 0 = Monitor
+   * 1 = Laptop
+   * 2 = Keyboard
+   * 3 = Drawer
+   * 4 = Server
+   * 5 = Whiteboard
+   * 6 = Door
+   */
+
+  const [unlockedIndex, setUnlockedIndex] =
+    useState(0);
+
+  function completePuzzle(id: PuzzleId) {
+    const currentIndex =
+      HOTSPOT_ORDER.indexOf(id);
+
+    const nextIndex = currentIndex + 1;
+
+    if (
+      currentIndex === unlockedIndex &&
+      nextIndex < HOTSPOT_ORDER.length
+    ) {
+      setUnlockedIndex(nextIndex);
+    }
+
+    setActivePuzzle(null);
+  }
+
+  const hotspots = [
+    {
+      id: "Monitor" as const,
+      puzzleId: "monitor" as const,
+      top: "26%",
+      left: "42.5%",
+      width: "14%",
+      height: "14%",
+      action: () =>
+        setActivePuzzle("monitor"),
+    },
+
+    {
+      id: "Keyboard" as const,
+      puzzleId: "keyboard" as const,
+      top: "63.2%",
+      left: "43%",
+      width: "13.5%",
+      height: "4.4%",
+      action: () =>
+        setActivePuzzle("keyboard"),
+    },
+
+    {
+      id: "Laptop" as const,
+      puzzleId: "laptop" as const,
+      top: "53.3%",
+      left: "30.5%",
+      width: "7%",
+      height: "9%",
+      action: () =>
+        setActivePuzzle("laptop"),
+    },
+
+    {
+      id: "Drawer" as const,
+      puzzleId: "drawer" as const,
+      top: "76%",
+      left: "24%",
+      width: "10.4%",
+      height: "15.4%",
+      action: () =>
+        alert("Drawer puzzle coming soon."),
+    },
+
+    {
+      id: "Server" as const,
+      puzzleId: "server" as const,
+      top: "8%",
+      left: "6.4%",
+      width: "7%",
+      height: "63%",
+      action: () =>
+        setActivePuzzle("server"),
+    },
+
+    {
+      id: "Whiteboard" as const,
+      puzzleId: "whiteboard" as const,
+      top: "14%",
+      left: "76.5%",
+      width: "10.7%",
+      height: "25.3%",
+      action: () =>
+        alert("Whiteboard puzzle coming soon."),
+    },
+
+    {
+      id: "Door" as const,
+      puzzleId: "door" as const,
+      top: "10%",
+      left: "91.5%",
+      width: "9%",
+      height: "67%",
+      action: () =>
+        alert("Door locked."),
+    },
+  ];
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-black">
+
       {/* Background */}
 
       <img
@@ -93,20 +157,43 @@ const hotspots = [
         className="w-full h-screen object-cover"
       />
 
+
       {/* Hotspots */}
 
-      {hotspots.map((spot) => (
-        <Hotspot
-          key={spot.id}
-          id={spot.id}
-          top={spot.top}
-          left={spot.left}
-          width={spot.width}
-          height={spot.height}
-          visible={DEBUG_HOTSPOTS}
-          onClick={spot.action}
-        />
-      ))}
+      {hotspots.map((spot) => {
+        const spotIndex =
+          HOTSPOT_ORDER.indexOf(
+            spot.puzzleId
+          );
+
+        /*
+         * Only the currently unlocked hotspot
+         * is rendered.
+         *
+         * Monitor appears first.
+         * Completing it unlocks Laptop.
+         * Completing Laptop unlocks Keyboard.
+         * etc.
+         */
+
+        if (spotIndex !== unlockedIndex) {
+          return null;
+        }
+
+        return (
+          <Hotspot
+            key={spot.id}
+            id={spot.id}
+            top={spot.top}
+            left={spot.left}
+            width={spot.width}
+            height={spot.height}
+            visible={DEBUG_HOTSPOTS}
+            onClick={spot.action}
+          />
+        );
+      })}
+
 
       {/* Mission
 
@@ -134,6 +221,7 @@ const hotspots = [
         </p>
       </div> */}
 
+
       {/* Security AI */}
 
       {/* <div
@@ -160,9 +248,11 @@ const hotspots = [
         </p>
       </div> */}
 
+
       {/* Inventory */}
 
       <InventoryBar />
+
 
       {/* Popup */}
 
@@ -189,11 +279,16 @@ const hotspots = [
             ? "FORENSICS-02"
             : "NODE-03"
         }
-        onClose={() => setActivePuzzle(null)}
+        onClose={() =>
+          setActivePuzzle(null)
+        }
       >
+
         {activePuzzle === "monitor" && (
           <MonitorPuzzle
-            onComplete={() => setActivePuzzle(null)}
+            onComplete={() =>
+              completePuzzle("monitor")
+            }
           />
         )}
 
@@ -203,12 +298,38 @@ const hotspots = [
           </div>
         )}
 
+        {activePuzzle === "keyboard" && (
+          <div className="text-zinc-300">
+            Keyboard puzzle coming soon...
+          </div>
+        )}
+
         {activePuzzle === "server" && (
           <div className="text-zinc-300">
             Server puzzle coming soon...
           </div>
         )}
+
+        {activePuzzle === "drawer" && (
+          <div className="text-zinc-300">
+            Drawer puzzle coming soon...
+          </div>
+        )}
+
+        {activePuzzle === "whiteboard" && (
+          <div className="text-zinc-300">
+            Whiteboard puzzle coming soon...
+          </div>
+        )}
+
+        {activePuzzle === "door" && (
+          <div className="text-zinc-300">
+            Door puzzle coming soon...
+          </div>
+        )}
+
       </GameWindow>
+
     </div>
   );
 }
