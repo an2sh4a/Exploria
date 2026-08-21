@@ -39,12 +39,12 @@ export default function SecurityAI({
   const hologramColors = [
     "#c084fc", // purple
     "#f472b6", // pink
-    "#e879f9", // magenta
+    "#e769fb", // magenta
     "#fb7185", // red
     "#fb923c", // orange
     "#facc15", // yellow
-    "#f472b6", // pink
-    "#c084fc", // purple
+    "#637def", // blue
+    "#8cfc84", // green
   ];
 
   return (

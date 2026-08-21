@@ -265,12 +265,13 @@ export default function MonitorPuzzle({
       relative
       flex
       h-full
-      min-h-[560px]
+      min-h-0
+      w-full
       flex-col
       overflow-hidden
       rounded-2xl
       border
-      border-violet-400/25
+      border-purple-400/25
       bg-[#070811]
       text-white
     ">
@@ -285,8 +286,6 @@ export default function MonitorPuzzle({
         inset-0
         overflow-hidden
       ">
-
-        {/* Purple glow */}
 
         <motion.div
           animate={{
@@ -309,8 +308,6 @@ export default function MonitorPuzzle({
           "
         />
 
-        {/* Pink glow */}
-
         <motion.div
           animate={{
             opacity: [0.08, 0.2, 0.08],
@@ -331,8 +328,6 @@ export default function MonitorPuzzle({
             blur-3xl
           "
         />
-
-        {/* Amber glow */}
 
         <motion.div
           animate={{
@@ -355,8 +350,6 @@ export default function MonitorPuzzle({
           "
         />
 
-        {/* Grid */}
-
         <div className="
           absolute
           inset-0
@@ -369,7 +362,7 @@ export default function MonitorPuzzle({
 
 
       {/* =====================================================
-          HEADER
+          SECURITY CORE HEADER
           ===================================================== */}
 
       <div className="
@@ -441,11 +434,7 @@ export default function MonitorPuzzle({
 
         </div>
 
-        <div className="
-          flex
-          items-center
-          gap-4
-        ">
+        <div className="flex items-center gap-4">
 
           <div className="hidden text-right sm:block">
 
@@ -494,10 +483,16 @@ export default function MonitorPuzzle({
 
 
       {/* =====================================================
-          PROGRESS BAR
+          PROGRESS
           ===================================================== */}
 
-      <div className="relative z-10 h-1 bg-black/40">
+      <div className="
+        relative
+        z-10
+        h-1
+        shrink-0
+        bg-black/40
+      ">
 
         <motion.div
           animate={{
@@ -521,7 +516,12 @@ export default function MonitorPuzzle({
 
 
       {/* =====================================================
-          MAIN AREA
+          MAIN CONTENT
+
+          IMPORTANT:
+          - This container itself does NOT scroll.
+          - AI stays fixed.
+          - Only the right puzzle area scrolls.
           ===================================================== */}
 
       <div className="
@@ -530,28 +530,25 @@ export default function MonitorPuzzle({
         flex
         min-h-0
         flex-1
-        flex-col
         gap-5
-        overflow-y-auto
+        overflow-hidden
         p-5
-        lg:flex-row
       ">
 
-
         {/* ===================================================
-            AI PANEL
+            FIXED AI PANEL
             =================================================== */}
 
-        <div className="
-          w-full
+        <aside className="
+          h-full
+          w-[220px]
           shrink-0
-          lg:w-[220px]
         ">
 
           <div className="
-            relative
+            flex
             h-full
-            min-h-[190px]
+            flex-col
             overflow-hidden
             rounded-2xl
             border
@@ -594,15 +591,16 @@ export default function MonitorPuzzle({
             </div>
 
             <div className="
-              mt-7
               flex
+              flex-1
+              items-center
               justify-center
             ">
               <SecurityAI size="large" />
             </div>
 
             <div className="
-              mt-4
+              shrink-0
               rounded-xl
               border
               border-pink-400/15
@@ -621,6 +619,8 @@ export default function MonitorPuzzle({
 
               <p className="
                 mt-2
+                max-h-24
+                overflow-y-auto
                 text-xs
                 leading-5
                 text-zinc-300
@@ -632,14 +632,22 @@ export default function MonitorPuzzle({
 
           </div>
 
-        </div>
+        </aside>
 
 
         {/* ===================================================
-            PUZZLE AREA
+            SCROLLABLE PUZZLE AREA
             =================================================== */}
 
-        <div className="min-w-0 flex-1">
+        <main className="
+          min-h-0
+          min-w-0
+          flex-1
+          overflow-y-auto
+          pr-2
+          [scrollbar-width:thin]
+          [scrollbar-color:rgba(167,139,250,0.35)_transparent]
+        ">
 
 
           {/* =================================================
@@ -650,7 +658,7 @@ export default function MonitorPuzzle({
 
             <div className="
               relative
-              min-h-[520px]
+              min-h-full
               rounded-2xl
               border
               border-purple-400/20
@@ -712,15 +720,15 @@ export default function MonitorPuzzle({
               </div>
 
 
-              {/* STACK */}
+              {/* COMMAND STACK */}
 
               <div className="
                 flex
-                min-h-[310px]
+                min-h-[420px]
                 flex-col
                 items-center
                 justify-center
-                pb-16
+                pb-8
               ">
 
                 <div className="
@@ -873,7 +881,7 @@ export default function MonitorPuzzle({
                     }}
                     onClick={extractCommand}
                     className="
-                      mt-7
+                      mt-8
                       rounded-xl
                       border
                       border-pink-300/60
@@ -912,7 +920,7 @@ export default function MonitorPuzzle({
           {phase === "timeline" && (
 
             <div className="
-              min-h-[520px]
+              min-h-full
               rounded-2xl
               border
               border-purple-400/20
@@ -935,7 +943,6 @@ export default function MonitorPuzzle({
                   mt-1
                   text-xl
                   font-bold
-                  text-white
                 ">
                   REBUILD THE ATTACK
                 </h2>
@@ -1041,7 +1048,7 @@ export default function MonitorPuzzle({
               <div
                 className={`
                   relative
-                  min-h-[220px]
+                  min-h-[300px]
                   rounded-2xl
                   border
                   ${
@@ -1074,7 +1081,7 @@ export default function MonitorPuzzle({
 
                     <div className="
                       flex
-                      min-h-[160px]
+                      min-h-[220px]
                       items-center
                       justify-center
                       pl-8
@@ -1232,7 +1239,7 @@ export default function MonitorPuzzle({
               }}
               className="
                 flex
-                min-h-[520px]
+                min-h-full
                 flex-col
                 items-center
                 justify-center
@@ -1366,7 +1373,7 @@ export default function MonitorPuzzle({
                   bg-gradient-to-r
                   from-emerald-400/10
                   via-green-400/10
-                  to-cyan-400/10
+                  to-purple-400/10
                   px-8
                   py-3
                   text-xs
@@ -1384,7 +1391,7 @@ export default function MonitorPuzzle({
             </motion.div>
           )}
 
-        </div>
+        </main>
 
       </div>
 
