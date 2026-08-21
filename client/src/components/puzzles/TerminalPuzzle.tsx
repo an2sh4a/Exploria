@@ -15,39 +15,51 @@ export default function TerminalPuzzle({
 }: Props) {
   const { addItem, hasItem } = useInventory();
 
-  const [screen, setScreen] =
-    useState<Screen>("boot");
-
+  const [screen, setScreen] = useState<Screen>("boot");
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (screen !== "boot") return;
+    if (screen !== "boot") {
+      return;
+    }
+
+    setProgress(0);
 
     const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
+      setProgress((previous) => {
+        if (previous >= 100) {
           clearInterval(interval);
 
           setTimeout(() => {
             setScreen("logs");
-          }, 600);
+          }, 700);
 
           return 100;
         }
 
-        return prev + 2;
+        return previous + 2;
       });
-    }, 50);
+    }, 45);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [screen]);
 
   function finishPuzzle() {
+    /*
+      Evidence obtained from the Monitor puzzle.
+
+      This item will later be used by the
+      Cyber Room progression system.
+    */
+
     if (!hasItem("ip-log")) {
       addItem({
         id: "ip-log",
         title: "Suspicious IP",
-        description: "192.168.10.44",
+        description:
+          "192.168.10.44 — recovered from the authentication server.",
       });
     }
 
@@ -55,7 +67,7 @@ export default function TerminalPuzzle({
   }
 
   return (
-    <>
+    <div className="h-full w-full">
       {screen === "boot" && (
         <TerminalBoot
           progress={progress}
@@ -67,6 +79,6 @@ export default function TerminalPuzzle({
           onSolved={finishPuzzle}
         />
       )}
-    </>
+    </div>
   );
 }

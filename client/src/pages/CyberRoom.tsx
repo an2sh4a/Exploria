@@ -6,9 +6,9 @@ import {
   Laptop,
   Server,
 } from "lucide-react";
-import GameWindow from "../components/puzzles/GameWindow";
-import TerminalPuzzle from "../components/puzzles/TerminalPuzzle";
-import Hotspot from "../components/puzzles/Hotspot";
+import GameWindow from "../components/puzzles/shared/GameWindow";
+import MonitorPuzzle from "../components/puzzles/cyber/monitor/MonitorPuzzle";
+import Hotspot from "../components/puzzles/shared/Hotspot";
 
 const DEBUG_HOTSPOTS = true;
 
@@ -216,7 +216,7 @@ const hotspots = [
         onClose={() => setActivePuzzle(null)}
       >
         {activePuzzle === "monitor" && (
-          <TerminalPuzzle
+          <MonitorPuzzle
             onComplete={() => setActivePuzzle(null)}
           />
         )}

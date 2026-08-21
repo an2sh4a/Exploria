@@ -500,7 +500,7 @@ export default function TerminalLogs({
 
           {phase === "stack" && (
 
-            <div className="h-full rounded-2xl border border-cyan-400/20 bg-black/30 p-5">
+            <div className="relative min-h-[520px] rounded-2xl border border-cyan-400/20 bg-black/30 p-5">
 
               <div className="mb-5 flex items-center justify-between">
 
@@ -522,7 +522,7 @@ export default function TerminalLogs({
 
               </div>
 
-              <div className="flex min-h-[300px] flex-col items-center justify-center">
+              <div className="flex min-h-[260px] flex-col items-center justify-center">
 
                 {/* Stack */}
 
@@ -645,7 +645,10 @@ export default function TerminalLogs({
                     }}
                     onClick={extractCommand}
                     className="
-                      mt-6
+                      absolute
+                      bottom-5
+                      left-1/2
+                      -translate-x-1/2
                       rounded-xl
                       border
                       border-cyan-300/60
