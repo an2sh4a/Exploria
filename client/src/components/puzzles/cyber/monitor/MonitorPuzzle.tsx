@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
 
 import { useInventory } from "../../../../contexts/InventoryContext";
+import { useAudio } from "../../../../contexts/AudioContext";
+
 import SecurityAI from "../../shared/SecurityAI";
 
 interface Props {
@@ -92,6 +94,8 @@ export default function MonitorPuzzle({
 }: Props) {
   const { addItem, hasItem } = useInventory();
 
+  const { playSound } = useAudio();
+
   const [commands, setCommands] =
     useState<Command[]>(INITIAL_COMMANDS);
 
@@ -141,6 +145,8 @@ export default function MonitorPuzzle({
       return;
     }
 
+    playSound("extract", 0.65);
+
     setAiMood("thinking");
 
     setMessage(
@@ -163,6 +169,8 @@ export default function MonitorPuzzle({
       setAiMood("idle");
 
       if (remainingCount === 1) {
+        playSound("success", 0.75);
+
         setTimeout(() => {
           setPhase("timeline");
 
@@ -189,6 +197,8 @@ export default function MonitorPuzzle({
       return;
     }
 
+    playSound("click", 0.5);
+
     const newTimeline = [
       ...timeline,
       command,
@@ -208,6 +218,8 @@ export default function MonitorPuzzle({
       );
 
       if (solved) {
+        playSound("success", 0.9);
+
         setAiMood("happy");
 
         setMessage(
@@ -218,6 +230,8 @@ export default function MonitorPuzzle({
           setPhase("complete");
         }, 900);
       } else {
+        playSound("interface", 0.55);
+
         setAiMood("warning");
         setWrongAttempt(true);
 
@@ -238,6 +252,8 @@ export default function MonitorPuzzle({
   }
 
   function resetTimeline() {
+    playSound("click", 0.45);
+
     setTimeline([]);
     setWrongAttempt(false);
     setAiMood("idle");
@@ -248,6 +264,8 @@ export default function MonitorPuzzle({
   }
 
   function finishMission() {
+    playSound("pickup", 0.85);
+
     if (!hasItem("ip-log")) {
       addItem({
         id: "ip-log",
@@ -257,7 +275,10 @@ export default function MonitorPuzzle({
       });
     }
 
-    onComplete();
+    setTimeout(() => {
+      playSound("complete", 0.85);
+      onComplete();
+    }, 450);
   }
 
   return (
@@ -362,7 +383,7 @@ export default function MonitorPuzzle({
 
 
       {/* =====================================================
-          SECURITY CORE HEADER
+          HEADER
           ===================================================== */}
 
       <div className="
@@ -517,11 +538,6 @@ export default function MonitorPuzzle({
 
       {/* =====================================================
           MAIN CONTENT
-
-          IMPORTANT:
-          - This container itself does NOT scroll.
-          - AI stays fixed.
-          - Only the right puzzle area scrolls.
           ===================================================== */}
 
       <div className="
@@ -648,7 +664,6 @@ export default function MonitorPuzzle({
           [scrollbar-width:thin]
           [scrollbar-color:rgba(167,139,250,0.35)_transparent]
         ">
-
 
           {/* =================================================
               SCREEN 1 — STACK

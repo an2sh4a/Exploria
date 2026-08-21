@@ -6,13 +6,16 @@ import "./index.css";
 import App from "./App";
 
 import { InventoryProvider } from "./contexts/InventoryContext";
+import { AudioProvider } from "./contexts/AudioContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <InventoryProvider>
-        <App />
-      </InventoryProvider>
+      <AudioProvider>
+        <InventoryProvider>
+          <App />
+        </InventoryProvider>
+      </AudioProvider>
     </BrowserRouter>
   </StrictMode>
 );
