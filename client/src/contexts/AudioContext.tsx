@@ -2,7 +2,8 @@ import {
   createContext,
   ReactNode,
   useContext,
-  useMemo,
+  useEffect,
+  useRef,
 } from "react";
 
 import uiClick from "../assets/audio/ui-click.wav";
@@ -32,35 +33,64 @@ interface AudioContextType {
 const AudioContext =
   createContext<AudioContextType | null>(null);
 
+const SOUND_SOURCES: Record<SoundName, string> = {
+  click: uiClick,
+  interface: uiInterface,
+  open: puzzleOpen,
+  extract: commandExtract,
+  success: puzzleSuccess,
+  pickup: itemPickup,
+  complete: puzzleComplete,
+};
+
 export function AudioProvider({
   children,
 }: {
   children: ReactNode;
 }) {
-  const sounds = useMemo(
-    () => ({
-      click: uiClick,
-      interface: uiInterface,
-      open: puzzleOpen,
-      extract: commandExtract,
-      success: puzzleSuccess,
-      pickup: itemPickup,
-      complete: puzzleComplete,
-    }),
-    []
-  );
+  const audioPool = useRef<
+    Partial<Record<SoundName, HTMLAudioElement>>
+  >({});
+
+  /*
+   * Preload the audio files once.
+   */
+
+  useEffect(() => {
+    Object.entries(SOUND_SOURCES).forEach(
+      ([name, source]) => {
+        const soundName = name as SoundName;
+
+        const audio = new Audio(source);
+
+        audio.preload = "auto";
+        audio.load();
+
+        audioPool.current[soundName] = audio;
+      }
+    );
+  }, []);
 
   function playSound(
     sound: SoundName,
     volume = 0.7
   ) {
-    const source = sounds[sound];
+    const original =
+      audioPool.current[sound];
 
-    if (!source) {
+    if (!original) {
       return;
     }
 
-    const audio = new Audio(source);
+    /*
+     * Clone the already-preloaded sound.
+     *
+     * This avoids creating/loading the WAV file
+     * at the exact moment the player clicks.
+     */
+
+    const audio =
+      original.cloneNode(true) as HTMLAudioElement;
 
     audio.volume = Math.max(
       0,
@@ -69,20 +99,20 @@ export function AudioProvider({
 
     audio.currentTime = 0;
 
-    void audio.play().catch(() => {
-      // Browser may block audio before user interaction.
+    void audio.play().catch((error) => {
+      console.warn(
+        `Could not play sound: ${sound}`,
+        error
+      );
     });
   }
 
-  const value = useMemo(
-    () => ({
-      playSound,
-    }),
-    []
-  );
-
   return (
-    <AudioContext.Provider value={value}>
+    <AudioContext.Provider
+      value={{
+        playSound,
+      }}
+    >
       {children}
     </AudioContext.Provider>
   );
