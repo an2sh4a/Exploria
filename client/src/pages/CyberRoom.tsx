@@ -10,6 +10,7 @@ import GameWindow from "../components/puzzles/shared/GameWindow";
 import MonitorPuzzle from "../components/puzzles/cyber/monitor/MonitorPuzzle";
 import Hotspot from "../components/puzzles/shared/Hotspot";
 import InventoryBar from "../components/puzzles/shared/InventoryBar";
+import LaptopPuzzle from "../components/puzzles/cyber/laptop/LaptopPuzzle";
 
 const DEBUG_HOTSPOTS = true;
 
@@ -293,9 +294,11 @@ export default function CyberRoom() {
         )}
 
         {activePuzzle === "laptop" && (
-          <div className="text-zinc-300">
-            Laptop puzzle coming soon...
-          </div>
+          <LaptopPuzzle
+            onComplete={() =>
+              completePuzzle("laptop")
+            }
+          />
         )}
 
         {activePuzzle === "keyboard" && (
