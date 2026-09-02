@@ -1,16 +1,12 @@
 import { useState } from "react";
-
 import background from "../assets/images/cyber/background.png";
-import {
-  Monitor,
-  Laptop,
-  Server,
-} from "lucide-react";
+import { Monitor, Laptop, Server } from "lucide-react";
 import GameWindow from "../components/puzzles/shared/GameWindow";
 import MonitorPuzzle from "../components/puzzles/cyber/monitor/MonitorPuzzle";
 import Hotspot from "../components/puzzles/shared/Hotspot";
 import InventoryBar from "../components/puzzles/shared/InventoryBar";
 import LaptopPuzzle from "../components/puzzles/cyber/laptop/LaptopPuzzle";
+import PuzzleBriefing from "../components/puzzles/shared/PuzzleBriefing";
 
 const DEBUG_HOTSPOTS = true;
 
@@ -33,24 +29,88 @@ const HOTSPOT_ORDER: PuzzleId[] = [
   "door",
 ];
 
+const BRIEFINGS: Record<
+  PuzzleId,
+  {
+    title: string;
+    subtitle: string;
+    concept: string;
+    description: string;
+  }
+> = {
+  monitor: {
+    title: "Command Buffer",
+    subtitle: "AUTH-SERVER-01",
+    concept: "Stack • LIFO",
+    description:
+      "The recovered command buffer follows a Last-In, First-Out structure. The most recently placed command sits at the TOP. Recover the commands by interacting with the stack.",
+  },
+  laptop: {
+    title: "Packet Queue",
+    subtitle: "FORENSICS-02",
+    concept: "Queue • FIFO",
+    description:
+      "Incoming network packets are waiting to be processed. This structure follows First-In, First-Out. Watch the FRONT and REAR as packets enter and leave the queue.",
+  },
+  keyboard: {
+    title: "Linked Access",
+    subtitle: "INPUT-NODE-03",
+    concept: "Linked List",
+    description:
+      "A chain of connected data nodes has been detected. Each node points toward another node. Analyse the structure to continue the investigation.",
+  },
+  drawer: {
+    title: "Evidence Search",
+    subtitle: "ARCHIVE-04",
+    concept: "Searching",
+    description:
+      "The evidence archive contains hidden information. Analyse the available records and determine how the target can be located.",
+  },
+  server: {
+    title: "System Hierarchy",
+    subtitle: "NODE-05",
+    concept: "Trees",
+    description:
+      "The server contains a hierarchy of connected nodes. Analyse the parent and child relationships within the structure.",
+  },
+  whiteboard: {
+    title: "Algorithm Board",
+    subtitle: "LAB-06",
+    concept: "Sorting",
+    description:
+      "A collection of data has been left in the wrong order. Analyse the sequence and determine how it should be reorganized.",
+  },
+  door: {
+    title: "Exit Route",
+    subtitle: "SECURITY-GATE-07",
+    concept: "Graphs • Pathfinding",
+    description:
+      "The final security gate contains a network of connected locations. A valid route must be identified before the lock can be released.",
+  },
+};
+
 export default function CyberRoom() {
   const [activePuzzle, setActivePuzzle] =
     useState<PuzzleId | null>(null);
 
-  /*
-   * Sequential progression.
-   *
-   * 0 = Monitor
-   * 1 = Laptop
-   * 2 = Keyboard
-   * 3 = Drawer
-   * 4 = Server
-   * 5 = Whiteboard
-   * 6 = Door
-   */
+  const [briefingPuzzle, setBriefingPuzzle] =
+    useState<PuzzleId | null>(null);
 
   const [unlockedIndex, setUnlockedIndex] =
     useState(0);
+
+  function openPuzzle(id: PuzzleId) {
+    setBriefingPuzzle(id);
+  }
+
+  function enterPuzzle() {
+    if (briefingPuzzle === null) {
+      return;
+    }
+
+    setActivePuzzle(briefingPuzzle);
+    setBriefingPuzzle(null);
+  }
 
   function completePuzzle(id: PuzzleId) {
     const currentIndex =
@@ -76,10 +136,8 @@ export default function CyberRoom() {
       left: "42.5%",
       width: "14%",
       height: "14%",
-      action: () =>
-        setActivePuzzle("monitor"),
+      action: () => openPuzzle("monitor"),
     },
-
     {
       id: "Keyboard" as const,
       puzzleId: "keyboard" as const,
@@ -87,10 +145,8 @@ export default function CyberRoom() {
       left: "43%",
       width: "13.5%",
       height: "4.4%",
-      action: () =>
-        setActivePuzzle("keyboard"),
+      action: () => openPuzzle("keyboard"),
     },
-
     {
       id: "Laptop" as const,
       puzzleId: "laptop" as const,
@@ -98,10 +154,8 @@ export default function CyberRoom() {
       left: "30.5%",
       width: "7%",
       height: "9%",
-      action: () =>
-        setActivePuzzle("laptop"),
+      action: () => openPuzzle("laptop"),
     },
-
     {
       id: "Drawer" as const,
       puzzleId: "drawer" as const,
@@ -112,7 +166,6 @@ export default function CyberRoom() {
       action: () =>
         alert("Drawer puzzle coming soon."),
     },
-
     {
       id: "Server" as const,
       puzzleId: "server" as const,
@@ -120,10 +173,8 @@ export default function CyberRoom() {
       left: "6.4%",
       width: "7%",
       height: "63%",
-      action: () =>
-        setActivePuzzle("server"),
+      action: () => openPuzzle("server"),
     },
-
     {
       id: "Whiteboard" as const,
       puzzleId: "whiteboard" as const,
@@ -134,7 +185,6 @@ export default function CyberRoom() {
       action: () =>
         alert("Whiteboard puzzle coming soon."),
     },
-
     {
       id: "Door" as const,
       puzzleId: "door" as const,
@@ -149,33 +199,15 @@ export default function CyberRoom() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-black">
-
-      {/* Background */}
-
       <img
         src={background}
         alt="Cyber Room"
         className="w-full h-screen object-cover"
       />
 
-
-      {/* Hotspots */}
-
       {hotspots.map((spot) => {
         const spotIndex =
-          HOTSPOT_ORDER.indexOf(
-            spot.puzzleId
-          );
-
-        /*
-         * Only the currently unlocked hotspot
-         * is rendered.
-         *
-         * Monitor appears first.
-         * Completing it unlocks Laptop.
-         * Completing Laptop unlocks Keyboard.
-         * etc.
-         */
+          HOTSPOT_ORDER.indexOf(spot.puzzleId);
 
         if (spotIndex !== unlockedIndex) {
           return null;
@@ -195,67 +227,32 @@ export default function CyberRoom() {
         );
       })}
 
-
-      {/* Mission
-
-      <div
-        className="
-          absolute
-          top-6
-          left-6
-          w-[200px]
-          rounded-2xl
-          bg-black/60
-          backdrop-blur-md
-          border
-          border-cyan-500
-          p-4
-        "
-      >
-        <h1 className="text-xl font-bold leading-tight text-cyan-400">
-          Cyber Investigation
-        </h1>
-
-        <p className="mt-3 text-[11px] leading-5 text-zinc-200">
-          The university database has been hacked.
-          Find the attacker before the evidence is erased.
-        </p>
-      </div> */}
-
-
-      {/* Security AI */}
-
-      {/* <div
-        className="
-          absolute
-          bottom-20
-          right-6
-          w-[200px]
-          rounded-2xl
-          bg-cyan-500/10
-          backdrop-blur-md
-          border
-          border-cyan-400
-          p-4
-        "
-      >
-        <h2 className="text-lg font-bold text-cyan-300">
-          🤖 Security AI
-        </h2>
-
-        <p className="mt-3 text-[11px] leading-5 text-zinc-200">
-          Unauthorized access detected.
-          Investigate the room and locate clues.
-        </p>
-      </div> */}
-
-
-      {/* Inventory */}
-
       <InventoryBar />
 
-
-      {/* Popup */}
+      <PuzzleBriefing
+        open={briefingPuzzle !== null}
+        title={
+          briefingPuzzle !== null
+            ? BRIEFINGS[briefingPuzzle].title
+            : ""
+        }
+        subtitle={
+          briefingPuzzle !== null
+            ? BRIEFINGS[briefingPuzzle].subtitle
+            : ""
+        }
+        concept={
+          briefingPuzzle !== null
+            ? BRIEFINGS[briefingPuzzle].concept
+            : ""
+        }
+        description={
+          briefingPuzzle !== null
+            ? BRIEFINGS[briefingPuzzle].description
+            : ""
+        }
+        onEnter={enterPuzzle}
+      />
 
       <GameWindow
         open={activePuzzle !== null}
@@ -280,11 +277,8 @@ export default function CyberRoom() {
             ? "FORENSICS-02"
             : "NODE-03"
         }
-        onClose={() =>
-          setActivePuzzle(null)
-        }
+        onClose={() => setActivePuzzle(null)}
       >
-
         {activePuzzle === "monitor" && (
           <MonitorPuzzle
             onComplete={() =>
@@ -330,9 +324,7 @@ export default function CyberRoom() {
             Door puzzle coming soon...
           </div>
         )}
-
       </GameWindow>
-
     </div>
   );
 }
