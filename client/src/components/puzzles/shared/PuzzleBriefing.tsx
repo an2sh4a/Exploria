@@ -1,7 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import SecurityAI from "./SecurityAI";
 import { useAudio } from "../../../contexts/AudioContext";
+import monitor1 from "../../../assets/audio/ai/monitor-1.mp3";
+import monitor2 from "../../../assets/audio/ai/monitor-2.mp3";
+import monitor3 from "../../../assets/audio/ai/monitor-3.mp3";
+import laptop1 from "../../../assets/audio/ai/laptop-1.mp3";
+import laptop2 from "../../../assets/audio/ai/laptop-2.mp3";
+import laptop3 from "../../../assets/audio/ai/laptop-3.mp3";
 
 interface PuzzleBriefingProps {
   open: boolean;
@@ -23,51 +29,131 @@ export default function PuzzleBriefing({
   const { playSound } = useAudio();
   const [step, setStep] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const isMonitor = title === "Command Buffer";
+
+  const dialogue = useMemo(
+    () =>
+      isMonitor
+        ? [
+            "I've detected a Stack structure in this terminal.",
+            "The last command placed is the first one you can retrieve.",
+            "Work from the top, recover the commands, and secure the evidence.",
+          ]
+        : [
+            "I've detected a Queue handling network packets.",
+            "The first packet to enter is the first packet processed.",
+            "Watch the front and rear, then recover the evidence.",
+          ],
+    [isMonitor]
+  );
+
+  const voiceFiles = useMemo(
+    () =>
+      isMonitor
+        ? [monitor1, monitor2, monitor3]
+        : [laptop1, laptop2, laptop3],
+    [isMonitor]
+  );
+
   useEffect(() => {
     if (!open) {
       setStep(0);
       setDisplayedText("");
+
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+
       return;
     }
+
     setStep(0);
     setDisplayedText("");
     playSound("interface", 0.45);
+
     const timer = window.setTimeout(() => {
       setStep(1);
     }, 700);
-    return () => window.clearTimeout(timer);
+
+    return () => {
+      window.clearTimeout(timer);
+
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+    };
   }, [open, playSound]);
+
   useEffect(() => {
-    if (!open || step === 0) return;
-    const texts = [
-      `I've detected an active ${concept} structure inside this system.`,
-      description,
-      "Your task is simple: understand the structure, then use it to recover the evidence."
-    ];
-    const text = texts[step - 1] ?? texts[texts.length - 1];
+    if (!open || step === 0) {
+      return;
+    }
+
+    const text = dialogue[step - 1];
+    const voiceSource = voiceFiles[step - 1];
+
+    if (!text || !voiceSource) {
+      return;
+    }
+
     setDisplayedText("");
-    let index = 0;
-    const interval = window.setInterval(() => {
-      index += 1;
-      setDisplayedText(text.slice(0, index));
-      if (index >= text.length) {
-        window.clearInterval(interval);
-        if (step < 3) {
-          window.setTimeout(() => {
-            setStep((current) => current + 1);
-          }, 900);
-        }
+
+    let characterIndex = 0;
+
+    const typingInterval = window.setInterval(() => {
+      characterIndex += 1;
+      setDisplayedText(text.slice(0, characterIndex));
+
+      if (characterIndex >= text.length) {
+        window.clearInterval(typingInterval);
       }
     }, 22);
-    return () => window.clearInterval(interval);
-  }, [open, step, concept, description]);
-  useEffect(() => {
-    if (!open || step === 0) return;
-    const soundTimer = window.setInterval(() => {
-      playSound("click", 0.12);
-    }, 900);
-    return () => window.clearInterval(soundTimer);
-  }, [open, step, playSound]);
+
+    const audio = new Audio(voiceSource);
+    audio.preload = "auto";
+    audio.volume = 1;
+
+    audioRef.current = audio;
+
+    const handleEnded = () => {
+      if (step < dialogue.length) {
+        window.setTimeout(() => {
+          setStep((current) => current + 1);
+        }, 450);
+      }
+    };
+
+    audio.addEventListener("ended", handleEnded);
+
+    const startAudio = async () => {
+      try {
+        await audio.play();
+        console.log("AI voice playing:", voiceSource);
+      } catch (error) {
+        console.error("AI voice playback failed:", error);
+      }
+    };
+
+    void startAudio();
+
+    return () => {
+      window.clearInterval(typingInterval);
+      audio.removeEventListener("ended", handleEnded);
+
+      if (audioRef.current === audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        audioRef.current = null;
+      }
+    };
+  }, [open, step, dialogue, voiceFiles]);
+
   return (
     <AnimatePresence>
       {open && (
@@ -134,6 +220,7 @@ export default function PuzzleBriefing({
                   AI TRANSMISSION
                 </motion.div>
               </motion.div>
+
               <div className="w-full max-w-[650px] md:w-[60%]">
                 <motion.div
                   initial={{ opacity: 0, x: 25 }}
@@ -148,6 +235,7 @@ export default function PuzzleBriefing({
                     {title}
                   </h2>
                 </motion.div>
+
                 <div className="relative min-h-[190px]">
                   <AnimatePresence mode="wait">
                     {step === 0 ? (
@@ -159,9 +247,7 @@ export default function PuzzleBriefing({
                         className="flex items-center gap-3 text-sm text-purple-200"
                       >
                         <motion.span
-                          animate={{
-                            opacity: [0.2, 1, 0.2],
-                          }}
+                          animate={{ opacity: [0.2, 1, 0.2] }}
                           transition={{
                             duration: 1,
                             repeat: Infinity,
@@ -182,7 +268,7 @@ export default function PuzzleBriefing({
                           <span className="text-[10px] font-semibold tracking-[0.25em] text-pink-300">
                             AI
                           </span>
-                          <div className="flex gap-1">
+                          <div className="flex items-center gap-1">
                             <motion.span
                               animate={{ height: [4, 12, 4] }}
                               transition={{
@@ -231,6 +317,7 @@ export default function PuzzleBriefing({
                     )}
                   </AnimatePresence>
                 </div>
+
                 {step === 3 && (
                   <motion.div
                     initial={{ opacity: 0, y: 15 }}
@@ -247,15 +334,15 @@ export default function PuzzleBriefing({
                     </div>
                     <motion.button
                       onClick={() => {
+                        if (audioRef.current) {
+                          audioRef.current.pause();
+                          audioRef.current.currentTime = 0;
+                        }
                         playSound("click", 0.65);
                         onEnter();
                       }}
-                      whileHover={{
-                        scale: 1.02,
-                      }}
-                      whileTap={{
-                        scale: 0.98,
-                      }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       className="w-full rounded-xl border border-pink-300/40 bg-pink-500/10 py-3.5 text-sm font-bold tracking-[0.22em] text-white shadow-[0_0_25px_rgba(244,114,182,0.12)] transition hover:border-pink-300/70 hover:bg-pink-500/20"
                     >
                       ENTER PUZZLE
