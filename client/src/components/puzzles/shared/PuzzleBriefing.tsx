@@ -30,32 +30,56 @@ export default function PuzzleBriefing({
   const [step, setStep] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   const isMonitor = title === "Command Buffer";
+  const isLaptop = title === "Packet Queue";
+  const useGeneratedVoice = isMonitor || isLaptop;
 
-  const dialogue = useMemo(
-    () =>
-      isMonitor
-        ? [
-            "I've detected a Stack structure in this terminal.",
-            "The last command placed is the first one you can retrieve.",
-            "Work from the top, recover the commands, and secure the evidence.",
-          ]
-        : [
-            "I've detected a Queue handling network packets.",
-            "The first packet to enter is the first packet processed.",
-            "Watch the front and rear, then recover the evidence.",
-          ],
-    [isMonitor]
-  );
+  const dialogue = useMemo(() => {
+    if (isMonitor) {
+      return [
+        "Investigator, I've detected a Stack structure in this terminal.",
+        "The last command placed is the first one you can retrieve.",
+        "Work from the top, recover the commands, and secure the evidence.",
+      ];
+    }
 
-  const voiceFiles = useMemo(
-    () =>
-      isMonitor
-        ? [monitor1, monitor2, monitor3]
-        : [laptop1, laptop2, laptop3],
-    [isMonitor]
-  );
+    if (isLaptop) {
+      return [
+        "I've detected a Queue handling network packets.",
+        "The first packet to enter is the first packet processed.",
+        "Watch the front and rear, then recover the evidence.",
+      ];
+    }
+
+    if (title === "Linked Access") {
+      return [
+        "This terminal contains a chain of connected data nodes.",
+        "Each node points to the next, forming a Linked List.",
+        "Follow the links from the head and recover the missing connection.",
+      ];
+    }
+
+    return [
+      "The archive contains a hidden piece of evidence.",
+      "The records are sorted, so the search can be narrowed step by step.",
+      "Use the middle record, eliminate half the search, and locate the target.",
+    ];
+  }, [isMonitor, isLaptop, title]);
+
+  const voiceFiles = useMemo(() => {
+    if (isMonitor) {
+      return [monitor1, monitor2, monitor3];
+    }
+
+    if (isLaptop) {
+      return [laptop1, laptop2, laptop3];
+    }
+
+    return [];
+  }, [isMonitor, isLaptop]);
 
   useEffect(() => {
     if (!open) {
@@ -68,6 +92,17 @@ export default function PuzzleBriefing({
         audioRef.current = null;
       }
 
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      speechRef.current = null;
+
+      if (timerRef.current !== null) {
+        window.clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+
       return;
     }
 
@@ -75,18 +110,27 @@ export default function PuzzleBriefing({
     setDisplayedText("");
     playSound("interface", 0.45);
 
-    const timer = window.setTimeout(() => {
+    timerRef.current = window.setTimeout(() => {
       setStep(1);
     }, 700);
 
     return () => {
-      window.clearTimeout(timer);
+      if (timerRef.current !== null) {
+        window.clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
 
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
         audioRef.current = null;
       }
+
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      speechRef.current = null;
     };
   }, [open, playSound]);
 
@@ -96,9 +140,8 @@ export default function PuzzleBriefing({
     }
 
     const text = dialogue[step - 1];
-    const voiceSource = voiceFiles[step - 1];
 
-    if (!text || !voiceSource) {
+    if (!text) {
       return;
     }
 
@@ -115,44 +158,112 @@ export default function PuzzleBriefing({
       }
     }, 22);
 
-    const audio = new Audio(voiceSource);
-    audio.preload = "auto";
-    audio.volume = 1;
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
 
-    audioRef.current = audio;
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
 
-    const handleEnded = () => {
+    speechRef.current = null;
+
+    const moveToNextStep = () => {
       if (step < dialogue.length) {
-        window.setTimeout(() => {
+        timerRef.current = window.setTimeout(() => {
           setStep((current) => current + 1);
         }, 450);
       }
     };
 
-    audio.addEventListener("ended", handleEnded);
+    if (useGeneratedVoice) {
+      const voiceSource = voiceFiles[step - 1];
 
-    const startAudio = async () => {
-      try {
-        await audio.play();
-        console.log("AI voice playing:", voiceSource);
-      } catch (error) {
-        console.error("AI voice playback failed:", error);
+      if (!voiceSource) {
+        return () => {
+          window.clearInterval(typingInterval);
+        };
       }
-    };
 
-    void startAudio();
+      const audio = new Audio(voiceSource);
+      audio.preload = "auto";
+      audio.volume = 1;
+      audioRef.current = audio;
+
+      const handleEnded = () => {
+        moveToNextStep();
+      };
+
+      audio.addEventListener("ended", handleEnded);
+
+      void audio.play().catch((error) => {
+        console.error("AI voice playback failed:", error);
+      });
+
+      return () => {
+        window.clearInterval(typingInterval);
+        audio.removeEventListener("ended", handleEnded);
+
+        if (audioRef.current === audio) {
+          audio.pause();
+          audio.currentTime = 0;
+          audioRef.current = null;
+        }
+      };
+    }
+
+    if ("speechSynthesis" in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9;
+      utterance.pitch = 0.82;
+      utterance.volume = 0.85;
+
+      const voices = window.speechSynthesis.getVoices();
+
+      const preferredVoice =
+        voices.find((voice) =>
+          /Microsoft|Google|Daniel|Alex|Samantha/i.test(
+            voice.name
+          )
+        ) ??
+        voices.find((voice) =>
+          /^en(-|_)/i.test(voice.lang)
+        );
+
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+
+      utterance.onend = moveToNextStep;
+      utterance.onerror = () => {
+        if (step < dialogue.length) {
+          timerRef.current = window.setTimeout(() => {
+            setStep((current) => current + 1);
+          }, Math.max(text.length * 25, 2200));
+        }
+      };
+
+      speechRef.current = utterance;
+      window.speechSynthesis.speak(utterance);
+    } else {
+      timerRef.current = window.setTimeout(
+        moveToNextStep,
+        Math.max(text.length * 25, 2200)
+      );
+    }
 
     return () => {
       window.clearInterval(typingInterval);
-      audio.removeEventListener("ended", handleEnded);
 
-      if (audioRef.current === audio) {
-        audio.pause();
-        audio.currentTime = 0;
-        audioRef.current = null;
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
       }
+
+      speechRef.current = null;
     };
-  }, [open, step, dialogue, voiceFiles]);
+  }, [open, step, dialogue, voiceFiles, useGeneratedVoice]);
 
   return (
     <AnimatePresence>
@@ -197,9 +308,7 @@ export default function PuzzleBriefing({
                   className="absolute h-64 w-64 rounded-full bg-purple-500/20 blur-3xl"
                 />
                 <motion.div
-                  animate={{
-                    y: [-3, 3, -3],
-                  }}
+                  animate={{ y: [-3, 3, -3] }}
                   transition={{
                     duration: 2.5,
                     repeat: Infinity,
@@ -220,7 +329,6 @@ export default function PuzzleBriefing({
                   AI TRANSMISSION
                 </motion.div>
               </motion.div>
-
               <div className="w-full max-w-[650px] md:w-[60%]">
                 <motion.div
                   initial={{ opacity: 0, x: 25 }}
@@ -235,7 +343,6 @@ export default function PuzzleBriefing({
                     {title}
                   </h2>
                 </motion.div>
-
                 <div className="relative min-h-[190px]">
                   <AnimatePresence mode="wait">
                     {step === 0 ? (
@@ -317,7 +424,6 @@ export default function PuzzleBriefing({
                     )}
                   </AnimatePresence>
                 </div>
-
                 {step === 3 && (
                   <motion.div
                     initial={{ opacity: 0, y: 15 }}
@@ -337,7 +443,14 @@ export default function PuzzleBriefing({
                         if (audioRef.current) {
                           audioRef.current.pause();
                           audioRef.current.currentTime = 0;
+                          audioRef.current = null;
                         }
+
+                        if ("speechSynthesis" in window) {
+                          window.speechSynthesis.cancel();
+                        }
+
+                        speechRef.current = null;
                         playSound("click", 0.65);
                         onEnter();
                       }}
