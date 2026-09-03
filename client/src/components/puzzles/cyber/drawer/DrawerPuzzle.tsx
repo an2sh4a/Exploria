@@ -9,79 +9,97 @@ interface Props {
   onComplete: () => void;
 }
 
-const RECORDS = [
-  { id: 11, name: "ACCESS LOG", status: "CLEAR" },
-  { id: 18, name: "AUTH REQUEST", status: "CLEAR" },
-  { id: 24, name: "DATABASE QUERY", status: "CLEAR" },
-  { id: 31, name: "FILE TRANSFER", status: "CLEAR" },
-  { id: 44, name: "SUSPICIOUS SESSION", status: "TARGET" },
-  { id: 57, name: "ARCHIVE ACCESS", status: "CLEAR" },
-  { id: 63, name: "NETWORK PING", status: "CLEAR" },
-  { id: 71, name: "ADMIN SESSION", status: "CLEAR" },
-  { id: 86, name: "SYSTEM CHECK", status: "CLEAR" },
+interface RecordData {
+  id: number;
+  name: string;
+  ip: string;
+}
+
+const RECORDS: RecordData[] = [
+  { id: 12, name: "ACCESS LOG", ip: "192.168.10.12" },
+  { id: 18, name: "AUTH REQUEST", ip: "192.168.10.18" },
+  { id: 24, name: "DATABASE QUERY", ip: "192.168.10.24" },
+  { id: 31, name: "FILE TRANSFER", ip: "192.168.10.31" },
+  { id: 39, name: "SESSION LOG", ip: "192.168.10.39" },
+  { id: 44, name: "NETWORK PING", ip: "192.168.10.44" },
+  { id: 51, name: "ARCHIVE ACCESS", ip: "192.168.10.51" },
+  { id: 58, name: "SYSTEM REQUEST", ip: "192.168.10.58" },
+  { id: 66, name: "AUTH SESSION", ip: "192.168.10.66" },
+  { id: 73, name: "SUSPICIOUS SESSION", ip: "192.168.10.73" },
+  { id: 79, name: "FILE ACCESS", ip: "192.168.10.79" },
+  { id: 84, name: "DATABASE SESSION", ip: "192.168.10.84" },
+  { id: 91, name: "ADMIN CHECK", ip: "192.168.10.91" },
+  { id: 97, name: "SYSTEM PING", ip: "192.168.10.97" },
+  { id: 103, name: "LOG ARCHIVE", ip: "192.168.10.103" },
 ];
 
-const TARGET = 44;
+const TARGET = 73;
 
 export default function DrawerPuzzle({ onComplete }: Props) {
   const { playSound } = useAudio();
   const { addItem } = useInventory();
+
   const [low, setLow] = useState(0);
   const [high, setHigh] = useState(RECORDS.length - 1);
   const [checked, setChecked] = useState<number[]>([]);
+  const [steps, setSteps] = useState(0);
   const [message, setMessage] = useState(
-    "The archive is sorted. Use the middle record to narrow the search."
+    "The records are sorted. Start by checking the middle record."
   );
   const [complete, setComplete] = useState(false);
 
-  const middle = Math.floor((low + high) / 2);
-  const activeRecord = RECORDS[middle];
+  const middle =
+    low <= high ? Math.floor((low + high) / 2) : -1;
 
-  function inspect(index: number) {
-    if (complete || low > high) {
+  const activeRecord =
+    middle >= 0 ? RECORDS[middle] : null;
+
+  function inspectMiddle() {
+    if (complete || middle < 0 || !activeRecord) {
       return;
     }
 
-    playSound("click", 0.6);
+    playSound("click", 0.65);
 
-    const nextChecked = checked.includes(index)
+    const nextChecked = checked.includes(middle)
       ? checked
-      : [...checked, index];
+      : [...checked, middle];
 
     setChecked(nextChecked);
+    setSteps((current) => current + 1);
 
-    const record = RECORDS[index];
-
-    if (record.id === TARGET) {
+    if (activeRecord.id === TARGET) {
       setComplete(true);
       setMessage(
-        "Target located. The suspicious session is hidden at record 44."
+        `Target found. Suspicious IP: ${activeRecord.ip}.`
       );
+
       addItem({
         id: "search-evidence",
-        title: "Search Evidence",
+        title: "Suspicious IP",
         description:
-          "Suspicious session record 44 recovered from the archive.",
+          `Suspicious session recovered from ${activeRecord.ip}.`,
       });
+
       playSound("success", 0.8);
 
       window.setTimeout(() => {
         playSound("pickup", 0.75);
         onComplete();
-      }, 900);
+      }, 1000);
 
       return;
     }
 
-    if (record.id < TARGET) {
-      setLow(index + 1);
+    if (activeRecord.id < TARGET) {
+      setLow(middle + 1);
       setMessage(
-        `Record ${record.id} is too low. Search the records to the right.`
+        `Record ${activeRecord.id} is lower than the target. The left half can be discarded.`
       );
     } else {
-      setHigh(index - 1);
+      setHigh(middle - 1);
       setMessage(
-        `Record ${record.id} is too high. Search the records to the left.`
+        `Record ${activeRecord.id} is higher than the target. The right half can be discarded.`
       );
     }
   }
@@ -91,10 +109,11 @@ export default function DrawerPuzzle({ onComplete }: Props) {
     setLow(0);
     setHigh(RECORDS.length - 1);
     setChecked([]);
-    setMessage(
-      "The archive is sorted. Use the middle record to narrow the search."
-    );
+    setSteps(0);
     setComplete(false);
+    setMessage(
+      "The records are sorted. Start by checking the middle record."
+    );
   }
 
   return (
@@ -105,9 +124,10 @@ export default function DrawerPuzzle({ onComplete }: Props) {
             ARCHIVE SEARCH NODE
           </p>
           <h2 className="mt-1 text-xl font-black">
-            Evidence Search
+            Suspicious IP Search
           </h2>
         </div>
+
         <div className="flex items-center gap-2 text-[10px] tracking-[0.2em] text-purple-300">
           <Search size={14} />
           BINARY SEARCH
@@ -115,7 +135,7 @@ export default function DrawerPuzzle({ onComplete }: Props) {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-5 p-6 lg:flex-row">
-        <div className="flex w-full flex-col rounded-2xl border border-purple-400/15 bg-purple-500/[0.04] p-5 lg:w-[230px]">
+        <div className="flex w-full flex-col rounded-2xl border border-purple-400/15 bg-purple-500/[0.04] p-5 lg:w-[250px]">
           <div className="flex items-center justify-center">
             <SecurityAI size="medium" />
           </div>
@@ -128,26 +148,46 @@ export default function DrawerPuzzle({ onComplete }: Props) {
             {message}
           </p>
 
-          <div className="mt-auto pt-6">
-            <div className="text-[9px] tracking-[0.2em] text-zinc-600">
+          <div className="mt-6 rounded-xl border border-purple-400/15 bg-purple-500/[0.05] p-4">
+            <p className="text-[9px] tracking-[0.2em] text-zinc-600">
               SEARCH RANGE
-            </div>
+            </p>
 
-            <div className="mt-2 rounded-xl border border-purple-400/15 bg-purple-500/[0.05] p-3">
-              <p className="text-sm text-zinc-300">
-                LOW:{" "}
-                <span className="font-bold text-white">
+            <div className="mt-3 flex justify-between text-sm text-zinc-300">
+              <span>
+                LOW{" "}
+                <strong className="text-white">
                   {low <= high ? RECORDS[low].id : "-"}
-                </span>
+                </strong>
+              </span>
+
+              <span>
+                HIGH{" "}
+                <strong className="text-white">
+                  {low <= high ? RECORDS[high].id : "-"}
+                </strong>
+              </span>
+            </div>
+
+            <div className="mt-4 border-t border-white/10 pt-3">
+              <p className="text-[9px] tracking-[0.2em] text-zinc-600">
+                CURRENT MIDDLE
               </p>
 
-              <p className="mt-2 text-sm text-zinc-300">
-                HIGH:{" "}
-                <span className="font-bold text-white">
-                  {low <= high ? RECORDS[high].id : "-"}
-                </span>
+              <p className="mt-1 text-2xl font-black text-pink-300">
+                {activeRecord?.id ?? "-"}
               </p>
             </div>
+          </div>
+
+          <div className="mt-auto pt-6">
+            <p className="text-[9px] tracking-[0.2em] text-zinc-600">
+              SEARCH STEPS
+            </p>
+
+            <p className="mt-2 text-2xl font-black text-white">
+              {steps}
+            </p>
           </div>
         </div>
 
@@ -159,7 +199,7 @@ export default function DrawerPuzzle({ onComplete }: Props) {
               </p>
 
               <p className="mt-1 text-sm text-zinc-300">
-                Locate the suspicious session using the middle record.
+                Only the highlighted middle record can be inspected.
               </p>
             </div>
 
@@ -172,39 +212,38 @@ export default function DrawerPuzzle({ onComplete }: Props) {
             </button>
           </div>
 
-          <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-y-auto md:grid-cols-3">
+          <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-y-auto md:grid-cols-3 lg:grid-cols-5">
             {RECORDS.map((record, index) => {
-              const active = low <= index && index <= high;
-              const selected = checked.includes(index);
-              const middleRecord = index === middle && !complete;
+              const inRange =
+                index >= low && index <= high;
+              const isMiddle = index === middle;
+              const isChecked = checked.includes(index);
+              const isTarget =
+                complete && record.id === TARGET;
 
               return (
                 <motion.button
                   key={record.id}
-                  onClick={() => middleRecord && inspect(index)}
+                  onClick={isMiddle ? inspectMiddle : undefined}
                   whileHover={
-                    middleRecord
-                      ? {
-                          scale: 1.02,
-                        }
+                    isMiddle && !complete
+                      ? { scale: 1.03 }
                       : undefined
                   }
                   whileTap={
-                    middleRecord
-                      ? {
-                          scale: 0.98,
-                        }
+                    isMiddle && !complete
+                      ? { scale: 0.97 }
                       : undefined
                   }
-                  disabled={!middleRecord}
+                  disabled={!isMiddle || complete}
                   className={`relative rounded-2xl border p-4 text-left transition ${
-                    complete && record.id === TARGET
-                      ? "border-emerald-400/70 bg-emerald-500/10 shadow-[0_0_25px_rgba(52,211,153,0.15)]"
-                      : middleRecord
-                      ? "cursor-pointer border-pink-300/60 bg-pink-500/[0.08] shadow-[0_0_25px_rgba(244,114,182,0.12)]"
-                      : active
+                    isTarget
+                      ? "border-emerald-400/70 bg-emerald-500/10 shadow-[0_0_25px_rgba(52,211,153,0.16)]"
+                      : isMiddle
+                      ? "cursor-pointer border-pink-300/70 bg-pink-500/[0.10] shadow-[0_0_28px_rgba(244,114,182,0.15)]"
+                      : inRange
                       ? "border-purple-300/20 bg-purple-500/[0.04]"
-                      : "border-white/5 bg-black/30 opacity-35"
+                      : "border-white/5 bg-black/30 opacity-25"
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -212,7 +251,7 @@ export default function DrawerPuzzle({ onComplete }: Props) {
                       RECORD
                     </span>
 
-                    {selected && (
+                    {isChecked && (
                       <CheckCircle2
                         size={15}
                         className="text-purple-300"
@@ -228,12 +267,18 @@ export default function DrawerPuzzle({ onComplete }: Props) {
                     {record.name}
                   </p>
 
-                  <div className="mt-4 border-t border-white/10 pt-2 text-[9px] tracking-[0.15em] text-zinc-500">
-                    {active
-                      ? middleRecord
-                        ? "MIDDLE RECORD"
-                        : record.status
-                      : "OUTSIDE RANGE"}
+                  <p className="mt-3 text-[9px] text-zinc-600">
+                    {record.ip}
+                  </p>
+
+                  <div className="mt-3 border-t border-white/10 pt-2 text-[9px] tracking-[0.15em]">
+                    {isTarget
+                      ? "TARGET FOUND"
+                      : isMiddle
+                      ? "INSPECT MIDDLE"
+                      : inRange
+                      ? "SEARCH RANGE"
+                      : "DISCARDED"}
                   </div>
                 </motion.button>
               );
@@ -242,13 +287,13 @@ export default function DrawerPuzzle({ onComplete }: Props) {
 
           <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
             <div className="text-[10px] tracking-[0.2em] text-zinc-500">
-              TARGET: UNKNOWN
+              TARGET IP: UNKNOWN
             </div>
 
             {complete && (
               <div className="flex items-center gap-2 text-xs font-semibold text-emerald-300">
                 <CheckCircle2 size={15} />
-                EVIDENCE FOUND
+                SUSPICIOUS IP FOUND
               </div>
             )}
           </div>

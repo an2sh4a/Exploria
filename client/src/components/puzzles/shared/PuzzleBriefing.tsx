@@ -56,16 +56,16 @@ export default function PuzzleBriefing({
 
     if (title === "Linked Access") {
       return [
-        "This terminal contains a chain of connected data nodes.",
-        "Each node points to the next, forming a Linked List.",
-        "Follow the links from the head and recover the missing connection.",
+        "This terminal contains Linked Lists.",
+        "You will investigate singly, doubly, and circular linked lists by following their connections.",
+        "Trace each structure from its starting node and recover the evidence.",
       ];
     }
 
     return [
-      "The archive contains a hidden piece of evidence.",
-      "The records are sorted, so the search can be narrowed step by step.",
-      "Use the middle record, eliminate half the search, and locate the target.",
+      "The archive uses Binary Search to locate the suspicious IP.",
+      "The records are sorted, so each search can eliminate half of the remaining range.",
+      "Inspect the middle record repeatedly until the suspicious IP is found.",
     ];
   }, [isMonitor, isLaptop, title]);
 
@@ -237,6 +237,7 @@ export default function PuzzleBriefing({
       }
 
       utterance.onend = moveToNextStep;
+
       utterance.onerror = () => {
         if (step < dialogue.length) {
           timerRef.current = window.setTimeout(() => {
@@ -281,18 +282,24 @@ export default function PuzzleBriefing({
             transition={{ duration: 1 }}
             className="absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(168,85,247,0.20),transparent_34%)]"
           />
+
           <div className="relative flex h-full w-full items-center justify-center">
             <div className="absolute left-8 top-8 text-[9px] tracking-[0.35em] text-purple-300/70">
               CYBER INVESTIGATION // SECURE CHANNEL
             </div>
+
             <div className="absolute right-8 top-8 text-[9px] tracking-[0.3em] text-pink-300/70">
               {subtitle}
             </div>
+
             <div className="flex w-full max-w-[1150px] flex-col items-center gap-8 px-8 md:flex-row md:gap-16">
               <motion.div
                 initial={{ opacity: 0, scale: 0.75, y: 25 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
+                transition={{
+                  duration: 0.6,
+                  ease: "easeOut",
+                }}
                 className="relative flex w-full items-center justify-center md:w-[40%]"
               >
                 <motion.div
@@ -307,8 +314,11 @@ export default function PuzzleBriefing({
                   }}
                   className="absolute h-64 w-64 rounded-full bg-purple-500/20 blur-3xl"
                 />
+
                 <motion.div
-                  animate={{ y: [-3, 3, -3] }}
+                  animate={{
+                    y: [-3, 3, -3],
+                  }}
                   transition={{
                     duration: 2.5,
                     repeat: Infinity,
@@ -318,6 +328,7 @@ export default function PuzzleBriefing({
                 >
                   <SecurityAI size="large" />
                 </motion.div>
+
                 <motion.div
                   animate={{ opacity: [0.3, 1, 0.3] }}
                   transition={{
@@ -329,20 +340,32 @@ export default function PuzzleBriefing({
                   AI TRANSMISSION
                 </motion.div>
               </motion.div>
+
               <div className="w-full max-w-[650px] md:w-[60%]">
                 <motion.div
-                  initial={{ opacity: 0, x: 25 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.35, duration: 0.45 }}
+                  initial={{
+                    opacity: 0,
+                    x: 25,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    x: 0,
+                  }}
+                  transition={{
+                    delay: 0.35,
+                    duration: 0.45,
+                  }}
                   className="mb-5"
                 >
                   <p className="text-[10px] font-semibold tracking-[0.4em] text-pink-300">
                     SECURITY AI
                   </p>
+
                   <h2 className="mt-2 text-3xl font-black text-white md:text-4xl">
                     {title}
                   </h2>
                 </motion.div>
+
                 <div className="relative min-h-[190px]">
                   <AnimatePresence mode="wait">
                     {step === 0 ? (
@@ -354,38 +377,58 @@ export default function PuzzleBriefing({
                         className="flex items-center gap-3 text-sm text-purple-200"
                       >
                         <motion.span
-                          animate={{ opacity: [0.2, 1, 0.2] }}
+                          animate={{
+                            opacity: [0.2, 1, 0.2],
+                          }}
                           transition={{
                             duration: 1,
                             repeat: Infinity,
                           }}
                           className="h-2 w-2 rounded-full bg-pink-300 shadow-[0_0_12px_#f472b6]"
                         />
+
                         Establishing secure neural link...
                       </motion.div>
                     ) : (
                       <motion.div
                         key={step}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.25 }}
+                        initial={{
+                          opacity: 0,
+                          y: 10,
+                        }}
+                        animate={{
+                          opacity: 1,
+                          y: 0,
+                        }}
+                        exit={{
+                          opacity: 0,
+                          y: -10,
+                        }}
+                        transition={{
+                          duration: 0.25,
+                        }}
                       >
                         <div className="mb-4 flex items-center gap-3">
                           <span className="text-[10px] font-semibold tracking-[0.25em] text-pink-300">
                             AI
                           </span>
+
                           <div className="flex items-center gap-1">
                             <motion.span
-                              animate={{ height: [4, 12, 4] }}
+                              animate={{
+                                height: [4, 12, 4],
+                              }}
                               transition={{
                                 duration: 0.7,
                                 repeat: Infinity,
                               }}
                               className="w-1 rounded-full bg-purple-300"
                             />
+
                             <motion.span
-                              animate={{ height: [8, 16, 8] }}
+                              animate={{
+                                height: [8, 16, 8],
+                              }}
                               transition={{
                                 duration: 0.7,
                                 delay: 0.15,
@@ -393,8 +436,11 @@ export default function PuzzleBriefing({
                               }}
                               className="w-1 rounded-full bg-pink-300"
                             />
+
                             <motion.span
-                              animate={{ height: [5, 13, 5] }}
+                              animate={{
+                                height: [5, 13, 5],
+                              }}
                               transition={{
                                 duration: 0.7,
                                 delay: 0.3,
@@ -403,14 +449,19 @@ export default function PuzzleBriefing({
                               className="w-1 rounded-full bg-amber-300"
                             />
                           </div>
+
                           <span className="text-[9px] tracking-[0.2em] text-zinc-600">
                             TRANSMITTING
                           </span>
                         </div>
+
                         <p className="text-lg leading-8 text-zinc-200 md:text-xl">
                           {displayedText}
+
                           <motion.span
-                            animate={{ opacity: [0, 1, 0] }}
+                            animate={{
+                              opacity: [0, 1, 0],
+                            }}
                             transition={{
                               duration: 0.8,
                               repeat: Infinity,
@@ -424,20 +475,32 @@ export default function PuzzleBriefing({
                     )}
                   </AnimatePresence>
                 </div>
+
                 {step === 3 && (
                   <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4 }}
+                    initial={{
+                      opacity: 0,
+                      y: 15,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    transition={{
+                      duration: 0.4,
+                    }}
                     className="mt-6"
                   >
                     <div className="mb-5 flex items-center gap-3">
                       <div className="h-px flex-1 bg-purple-400/15" />
+
                       <span className="text-[9px] tracking-[0.3em] text-purple-300">
                         {concept.toUpperCase()}
                       </span>
+
                       <div className="h-px flex-1 bg-purple-400/15" />
                     </div>
+
                     <motion.button
                       onClick={() => {
                         if (audioRef.current) {
@@ -454,8 +517,12 @@ export default function PuzzleBriefing({
                         playSound("click", 0.65);
                         onEnter();
                       }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={{
+                        scale: 1.02,
+                      }}
+                      whileTap={{
+                        scale: 0.98,
+                      }}
                       className="w-full rounded-xl border border-pink-300/40 bg-pink-500/10 py-3.5 text-sm font-bold tracking-[0.22em] text-white shadow-[0_0_25px_rgba(244,114,182,0.12)] transition hover:border-pink-300/70 hover:bg-pink-500/20"
                     >
                       ENTER PUZZLE
